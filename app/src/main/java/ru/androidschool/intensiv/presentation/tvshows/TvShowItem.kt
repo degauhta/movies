@@ -25,6 +25,7 @@ class TvShowItem(
 
         Picasso.get()
             .load(movie.imageUrl)
+            .placeholder(R.drawable.item_placeholder)
             .into(viewBinding.imagePreview)
     }
 }

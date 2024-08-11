@@ -53,6 +53,7 @@ class MovieDetailsFragment : BaseFragment<FragmentMovieDetailsBinding>() {
     private fun initBaseViews(movie: Movie) {
         Picasso.get()
             .load(movie.imageUrl)
+            .placeholder(R.drawable.item_placeholder)
             .into(binding.image)
 
         binding.title.text = movie.title

@@ -12,7 +12,7 @@ class TvShowConverter {
                 id = it.id,
                 title = it.name,
                 overview = it.overview,
-                voteAverage = it.voteAverage.div(2),
+                voteAverage = it.voteAverage,
                 imageUrl = it.posterPath.orEmpty(),
                 isMovie = false,
             )

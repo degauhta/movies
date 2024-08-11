@@ -22,7 +22,7 @@ class MovieItem(
         }
         Picasso.get()
             .load(movie.imageUrl)
-            .placeholder(R.drawable.ic_profile)
+            .placeholder(R.drawable.item_placeholder)
             .into(view.imagePreview)
     }
 

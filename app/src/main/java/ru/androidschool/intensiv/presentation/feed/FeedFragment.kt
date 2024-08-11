@@ -2,16 +2,23 @@ package ru.androidschool.intensiv.presentation.feed
 
 import android.os.Bundle
 import android.view.*
+import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import ru.androidschool.intensiv.R
-import ru.androidschool.intensiv.data.MockRepository
+import ru.androidschool.intensiv.data.repository.MovieRepository
 import ru.androidschool.intensiv.models.domain.Movie
 import ru.androidschool.intensiv.databinding.FeedHeaderBinding
 import ru.androidschool.intensiv.databinding.FragmentFeedBinding
+import ru.androidschool.intensiv.models.data.response.MoviesResponse
 import ru.androidschool.intensiv.presentation.BaseFragment
+import ru.androidschool.intensiv.presentation.OffsetItemDecorator
 import ru.androidschool.intensiv.presentation.afterTextChanged
+import ru.androidschool.intensiv.presentation.converters.MovieConverter
 import timber.log.Timber
 
 class FeedFragment : BaseFragment<FragmentFeedBinding>() {
@@ -20,6 +27,7 @@ class FeedFragment : BaseFragment<FragmentFeedBinding>() {
     private val searchBinding get() = _searchBinding!!
 
     private val adapter by lazy { GroupAdapter<GroupieViewHolder>() }
+    private val adapterPopular by lazy { GroupAdapter<GroupieViewHolder>() }
 
     override fun createViewBinding(inflater: LayoutInflater, container: ViewGroup?) =
         FragmentFeedBinding.inflate(inflater, container, false)
@@ -35,18 +43,63 @@ class FeedFragment : BaseFragment<FragmentFeedBinding>() {
             }
         }
 
-        binding.moviesRecyclerView.adapter = adapter.apply { addAll(getMovies()) }
+        binding.moviesRecyclerView.addItemDecoration(OffsetItemDecorator())
+        binding.moviesRecyclerView.adapter = adapter
+        binding.moviesPopularRecyclerView.addItemDecoration(OffsetItemDecorator())
+        binding.moviesPopularRecyclerView.adapter = adapterPopular
+
+        getMovies()
     }
 
-    private fun getMovies() = MockRepository.getMovies().map {
-        MovieItem(it) { movie ->
-            openMovieDetails(movie)
-        }
-    }.toList()
+    private fun getMovies() {
+        MovieRepository.getTopRatedMovies().enqueue(object : Callback<MoviesResponse> {
+
+            override fun onResponse(
+                call: Call<MoviesResponse>,
+                respose: Response<MoviesResponse>
+            ) {
+                respose.body()?.let { body ->
+                    val tvShowsItems = MovieConverter().convert(body) { openMovieDetails(it) }
+                    binding.moviesProgressbar.hide()
+                    adapter.apply { addAll(tvShowsItems) }
+
+                    getPopularMovies()
+                }
+            }
+
+            override fun onFailure(call: Call<MoviesResponse>, error: Throwable) {
+                Toast.makeText(requireContext(), "Error load data", Toast.LENGTH_SHORT).show()
+                Timber.e(error)
+            }
+
+        })
+    }
+
+    private fun getPopularMovies() {
+        MovieRepository.getPopularMovies().enqueue(object : Callback<MoviesResponse> {
+
+            override fun onResponse(
+                call: Call<MoviesResponse>,
+                respose: Response<MoviesResponse>
+            ) {
+                respose.body()?.let { body ->
+                    val tvShowsItems = MovieConverter().convert(body) { openMovieDetails(it) }
+                    binding.moviesProgressbar.hide()
+                    adapterPopular.apply { addAll(tvShowsItems) }
+                }
+            }
+
+            override fun onFailure(call: Call<MoviesResponse>, error: Throwable) {
+                Toast.makeText(requireContext(), "Error load data", Toast.LENGTH_SHORT).show()
+                Timber.e(error)
+            }
+
+        })
+    }
 
     private fun openMovieDetails(movie: Movie) {
         val bundle = Bundle()
-        bundle.putString(KEY_TITLE, movie.title)
+        bundle.putParcelable(MOVIE_KEY, movie)
         findNavController().navigate(R.id.movie_details_fragment, bundle, options)
     }
 
@@ -72,7 +125,7 @@ class FeedFragment : BaseFragment<FragmentFeedBinding>() {
 
     companion object {
         const val MIN_LENGTH = 3
-        const val KEY_TITLE = "title"
+        const val MOVIE_KEY = "MOVIE_KEY"
         const val KEY_SEARCH = "search"
     }
 }

@@ -26,4 +26,11 @@
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="placeholder">Пёс Киноман</string>
+
+    <string name="movie_top_title">Лучшие</string>
+    <string name="movie_popular_title">Популярные</string>
+
+    <string name="movie_details_overview">Описание</string>
+    <string name="movie_details_actors">Актеры</string>
+
 </resources>

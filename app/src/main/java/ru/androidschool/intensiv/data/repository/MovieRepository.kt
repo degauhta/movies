@@ -27,5 +27,4 @@ object MovieRepository {
         id = id,
         movieType = if (isMovie) MOVIE_PATH_KEY else TV_PATH_KEY
     )
-
 }

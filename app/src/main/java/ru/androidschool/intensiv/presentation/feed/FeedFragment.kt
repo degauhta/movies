@@ -70,7 +70,6 @@ class FeedFragment : BaseFragment<FragmentFeedBinding>() {
                 showToast(R.string.load_data_error)
                 Timber.e(error)
             }
-
         })
     }
 
@@ -92,7 +91,6 @@ class FeedFragment : BaseFragment<FragmentFeedBinding>() {
                 showToast(R.string.load_data_error)
                 Timber.e(error)
             }
-
         })
     }
 

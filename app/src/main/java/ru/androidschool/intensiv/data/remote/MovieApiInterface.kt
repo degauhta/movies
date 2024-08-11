@@ -13,19 +13,19 @@ interface MovieApiInterface {
     @GET("movie/top_rated")
     fun getTopRatedMovies(
         @Query("api_key") apiKey: String,
-        @Query("language") language: String = "ru",
+        @Query("language") language: String = "ru"
     ): Call<MoviesResponse>
 
     @GET("movie/popular")
     fun getPopularMovies(
         @Query("api_key") apiKey: String,
-        @Query("language") language: String = "ru",
+        @Query("language") language: String = "ru"
     ): Call<MoviesResponse>
 
     @GET("tv/top_rated")
     fun getTopRatedTvShow(
         @Query("api_key") apiKey: String,
-        @Query("language") language: String = "ru",
+        @Query("language") language: String = "ru"
     ): Call<MoviesResponse>
 
     @GET("{movie_type}/{id}")
@@ -33,7 +33,7 @@ interface MovieApiInterface {
         @Path("movie_type") movieType: String,
         @Path("id") id: Int,
         @Query("api_key") apiKey: String,
-        @Query("language") language: String = "ru",
+        @Query("language") language: String = "ru"
     ): Call<DetailsResponse>
 
     @GET("{movie_type}/{id}/credits")
@@ -41,6 +41,6 @@ interface MovieApiInterface {
         @Path("movie_type") movieType: String,
         @Path("id") id: Int,
         @Query("api_key") apiKey: String,
-        @Query("language") language: String = "ru",
+        @Query("language") language: String = "ru"
     ): Call<CreditsResponse>
 }

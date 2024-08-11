@@ -51,9 +51,7 @@ class TvShowsFragment : BaseFragment<FragmentTvShowsBinding>() {
                 showToast(R.string.load_data_error)
                 Timber.e(error)
             }
-
         })
-
     }
 
     private fun openTvShowDetails(movie: Movie) {

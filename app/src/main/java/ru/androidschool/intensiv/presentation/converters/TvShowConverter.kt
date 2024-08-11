@@ -14,7 +14,7 @@ class TvShowConverter {
                 overview = it.overview,
                 voteAverage = it.voteAverage,
                 imageUrl = it.posterPath.orEmpty(),
-                isMovie = false,
+                isMovie = false
             )
             TvShowItem(movie = tvShow, onClick = onClick)
         }

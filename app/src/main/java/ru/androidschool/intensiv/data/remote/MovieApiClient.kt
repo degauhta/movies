@@ -33,5 +33,4 @@ object MovieApiClient {
     }
 
     val apiClient: MovieApiInterface by lazy { retrofit.create(MovieApiInterface::class.java) }
-
 }

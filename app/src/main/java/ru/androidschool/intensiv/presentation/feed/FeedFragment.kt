@@ -1,4 +1,4 @@
-package ru.androidschool.intensiv.ui.feed
+package ru.androidschool.intensiv.presentation.feed
 
 import android.os.Bundle
 import android.view.*
@@ -7,11 +7,11 @@ import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.data.MockRepository
-import ru.androidschool.intensiv.data.Movie
+import ru.androidschool.intensiv.models.domain.Movie
 import ru.androidschool.intensiv.databinding.FeedHeaderBinding
 import ru.androidschool.intensiv.databinding.FragmentFeedBinding
-import ru.androidschool.intensiv.ui.BaseFragment
-import ru.androidschool.intensiv.ui.afterTextChanged
+import ru.androidschool.intensiv.presentation.BaseFragment
+import ru.androidschool.intensiv.presentation.afterTextChanged
 import timber.log.Timber
 
 class FeedFragment : BaseFragment<FragmentFeedBinding>() {

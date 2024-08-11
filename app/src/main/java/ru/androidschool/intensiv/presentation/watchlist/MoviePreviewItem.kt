@@ -1,20 +1,20 @@
-package ru.androidschool.intensiv.ui.watchlist
+package ru.androidschool.intensiv.presentation.watchlist
 
 import android.view.View
 import com.squareup.picasso.Picasso
 import com.xwray.groupie.viewbinding.BindableItem
 import ru.androidschool.intensiv.R
-import ru.androidschool.intensiv.data.Movie
-import ru.androidschool.intensiv.databinding.ItemSmallBinding
+import ru.androidschool.intensiv.models.domain.Movie
+import ru.androidschool.intensiv.databinding.ItemMovieSmallBinding
 
 class MoviePreviewItem(
     private val content: Movie,
     private val onClick: (movie: Movie) -> Unit
-) : BindableItem<ItemSmallBinding>() {
+) : BindableItem<ItemMovieSmallBinding>() {
 
-    override fun getLayout() = R.layout.item_small
+    override fun getLayout() = R.layout.item_movie_small
 
-    override fun bind(view: ItemSmallBinding, position: Int) {
+    override fun bind(view: ItemMovieSmallBinding, position: Int) {
         view.imagePreview.setOnClickListener {
             onClick.invoke(content)
         }
@@ -24,5 +24,5 @@ class MoviePreviewItem(
             .into(view.imagePreview)
     }
 
-    override fun initializeViewBinding(v: View): ItemSmallBinding = ItemSmallBinding.bind(v)
+    override fun initializeViewBinding(v: View) = ItemMovieSmallBinding.bind(v)
 }

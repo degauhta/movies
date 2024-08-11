@@ -1,4 +1,4 @@
-package ru.androidschool.intensiv.ui.tvshows
+package ru.androidschool.intensiv.presentation.tvshows
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,10 +9,10 @@ import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.data.MockRepository
-import ru.androidschool.intensiv.data.TvShow
+import ru.androidschool.intensiv.models.domain.Movie
 import ru.androidschool.intensiv.databinding.FragmentTvShowsBinding
-import ru.androidschool.intensiv.ui.BaseFragment
-import ru.androidschool.intensiv.ui.feed.FeedFragment
+import ru.androidschool.intensiv.presentation.BaseFragment
+import ru.androidschool.intensiv.presentation.feed.FeedFragment
 
 class TvShowsFragment : BaseFragment<FragmentTvShowsBinding>() {
 
@@ -33,9 +33,9 @@ class TvShowsFragment : BaseFragment<FragmentTvShowsBinding>() {
             }
         }.toList()
 
-    private fun openTvShowDetails(show: TvShow) {
+    private fun openTvShowDetails(movie: Movie) {
         val bundle = Bundle()
-        bundle.putString(FeedFragment.KEY_TITLE, show.title)
+        bundle.putString(FeedFragment.KEY_TITLE, movie.title)
         findNavController().navigate(R.id.movie_details_fragment, bundle, options)
     }
 }

@@ -8,22 +8,21 @@ import ru.androidschool.intensiv.models.domain.Movie
 import ru.androidschool.intensiv.databinding.ItemMovieBinding
 
 class MovieItem(
-    private val content: Movie,
+    private val movie: Movie,
     private val onClick: (movie: Movie) -> Unit
 ) : BindableItem<ItemMovieBinding>() {
 
     override fun getLayout(): Int = R.layout.item_movie
 
     override fun bind(view: ItemMovieBinding, position: Int) {
-        view.description.text = content.title
-        view.movieRating.rating = content.rating
+        view.title.text = movie.title
+        view.rating.rating = movie.voteAverage
         view.content.setOnClickListener {
-            onClick.invoke(content)
+            onClick.invoke(movie)
         }
-
-        // TODO Получать из модели
         Picasso.get()
-            .load("https://m.media-amazon.com/images/M/MV5BYTk3MDljOWQtNGI2My00OTEzLTlhYjQtOTQ4ODM2MzUwY2IwXkEyXkFqcGdeQXVyNTIzOTk5ODM@._V1_.jpg")
+            .load(movie.imageUrl)
+            .placeholder(R.drawable.ic_profile)
             .into(view.imagePreview)
     }
 

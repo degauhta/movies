@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="100dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:background="@color/blueDark">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/actor_image"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:contentDescription="@null"
+        android:scaleType="centerCrop"
+        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize10Percent"
+        tools:src="@drawable/ic_avatar" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/actor_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:gravity="center_horizontal|top"
+        android:maxLines="3"
+        android:minLines="3"
+        android:textColor="@color/white"
+        tools:text="Benedict Cumberbatchtch" />
+
+</LinearLayout>

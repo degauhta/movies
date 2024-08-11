@@ -5,10 +5,7 @@
     android:id="@+id/content"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginStart="@dimen/material_margin_super_small"
-    android:layout_marginLeft="@dimen/material_margin_super_small"
-    android:layout_marginEnd="@dimen/material_margin_super_small"
-    android:layout_marginBottom="@dimen/material_margin_normal"
+    android:background="?attr/selectableItemBackground"
     android:orientation="vertical"
     tools:background="@color/blueDark"
     tools:ignore="RtlHardcoded">
@@ -23,8 +20,8 @@
         tools:src="@drawable/ic_avatar" />
 
     <TextView
-        android:id="@+id/description"
-        android:layout_width="@dimen/movie_card_text_width"
+        android:id="@+id/title"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/material_margin_super_small"
         android:ellipsize="end"
@@ -35,7 +32,7 @@
         tools:textColor="@color/white" />
 
     <androidx.appcompat.widget.AppCompatRatingBar
-        android:id="@+id/movie_rating"
+        android:id="@+id/rating"
         style="@style/Base.Widget.AppCompat.RatingBar.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -44,4 +41,5 @@
         android:progressBackgroundTint="@color/colorControlNormal"
         android:stepSize="0.5"
         tools:rating="5" />
+
 </LinearLayout>

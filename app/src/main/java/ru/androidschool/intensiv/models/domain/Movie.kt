@@ -9,7 +9,8 @@ data class Movie(
     val title: String,
     val overview: String,
     val voteAverage: Float,
-    val imageUrl: String
+    val imageUrl: String,
+    val isMovie: Boolean,
 ) : Parcelable {
 
     val rating: Float

@@ -12,8 +12,9 @@ class MovieConverter {
                 id = it.id,
                 title = it.name,
                 overview = it.overview,
-                voteAverage = it.voteAverage,
-                imageUrl = it.posterPath.orEmpty()
+                voteAverage = it.voteAverage.div(2),
+                imageUrl = it.posterPath.orEmpty(),
+                isMovie = true,
             )
             MovieItem(movie = movie, onClick = onClick)
         }

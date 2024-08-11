@@ -33,4 +33,6 @@
     <string name="movie_details_overview">Описание</string>
     <string name="movie_details_actors">Актеры</string>
 
+    <string name="load_data_error">Не удалось загрузить данные</string>
+
 </resources>

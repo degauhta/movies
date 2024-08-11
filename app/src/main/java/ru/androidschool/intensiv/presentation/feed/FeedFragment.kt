@@ -2,7 +2,6 @@ package ru.androidschool.intensiv.presentation.feed
 
 import android.os.Bundle
 import android.view.*
-import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
@@ -68,7 +67,7 @@ class FeedFragment : BaseFragment<FragmentFeedBinding>() {
             }
 
             override fun onFailure(call: Call<MoviesResponse>, error: Throwable) {
-                Toast.makeText(requireContext(), "Error load data", Toast.LENGTH_SHORT).show()
+                showToast(R.string.load_data_error)
                 Timber.e(error)
             }
 
@@ -90,7 +89,7 @@ class FeedFragment : BaseFragment<FragmentFeedBinding>() {
             }
 
             override fun onFailure(call: Call<MoviesResponse>, error: Throwable) {
-                Toast.makeText(requireContext(), "Error load data", Toast.LENGTH_SHORT).show()
+                showToast(R.string.load_data_error)
                 Timber.e(error)
             }
 

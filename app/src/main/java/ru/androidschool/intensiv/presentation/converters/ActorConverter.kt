@@ -12,10 +12,17 @@ class ActorConverter {
             val actor = Actor(
                 id = cast.id,
                 name = cast.name,
-                photoUrl = cast.profilePath.orEmpty()
+                photoUrl = cast.profilePath.createPhotoUrl()
             )
             result.add(ActorItem(actor))
         }
         return result
+    }
+
+    // todo move to domain converter
+    private fun String?.createPhotoUrl() = this?.let { "$PHOTO_DEFAULT_PATH$this" }
+
+    companion object {
+        const val PHOTO_DEFAULT_PATH = "https://image.tmdb.org/t/p/w500"
     }
 }

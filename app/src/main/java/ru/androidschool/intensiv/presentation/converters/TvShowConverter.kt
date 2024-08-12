@@ -12,11 +12,15 @@ class TvShowConverter {
                 id = it.id,
                 title = it.name,
                 overview = it.overview,
-                voteAverage = it.voteAverage,
-                imageUrl = it.posterPath.orEmpty(),
+                rating = it.voteAverage.div(MovieConverter.HALF_IMDB_RATING),
+                imageUrl = it.posterPath.createImageUrl(),
                 isMovie = false
             )
             TvShowItem(movie = tvShow, onClick = onClick)
         }
     }
+
+    // todo move to domain converter
+    private fun String?.createImageUrl() =
+        this?.let { "${MovieConverter.POSTER_DEFAULT_PATH}$this" }
 }

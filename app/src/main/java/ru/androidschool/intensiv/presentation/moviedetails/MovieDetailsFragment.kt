@@ -61,7 +61,7 @@ class MovieDetailsFragment : BaseFragment<FragmentMovieDetailsBinding>() {
             .into(binding.image)
 
         binding.title.text = movie.title
-        binding.rating.rating = movie.voteAverage
+        binding.rating.rating = movie.rating
 
         binding.overviewTitle.isVisible = movie.overview.isNotEmpty()
         binding.overview.text = movie.overview

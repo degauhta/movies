@@ -12,11 +12,19 @@ class MovieConverter {
                 id = it.id,
                 title = it.name,
                 overview = it.overview,
-                voteAverage = it.voteAverage.div(2),
-                imageUrl = it.posterPath.orEmpty(),
+                rating = it.voteAverage.div(HALF_IMDB_RATING),
+                imageUrl = it.posterPath.createImageUrl(),
                 isMovie = true
             )
             MovieItem(movie = movie, onClick = onClick)
         }
+    }
+
+    // todo move to domain converter
+    private fun String?.createImageUrl() = this?.let { "$POSTER_DEFAULT_PATH$this" }
+
+    companion object {
+        const val HALF_IMDB_RATING = 2
+        const val POSTER_DEFAULT_PATH = "https://image.tmdb.org/t/p/w500"
     }
 }

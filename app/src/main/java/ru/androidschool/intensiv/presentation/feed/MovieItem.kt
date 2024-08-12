@@ -16,7 +16,7 @@ class MovieItem(
 
     override fun bind(view: ItemMovieBinding, position: Int) {
         view.title.text = movie.title
-        view.rating.rating = movie.voteAverage
+        view.rating.rating = movie.rating
         view.content.setOnClickListener {
             onClick.invoke(movie)
         }

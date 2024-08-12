@@ -8,11 +8,7 @@ data class Movie(
     val id: Int,
     val title: String,
     val overview: String,
-    val voteAverage: Float,
-    val imageUrl: String,
+    val rating: Float,
+    val imageUrl: String?,
     val isMovie: Boolean
-) : Parcelable {
-
-    val rating: Float
-        get() = voteAverage.div(2)
-}
+) : Parcelable

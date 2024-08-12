@@ -10,10 +10,7 @@ data class MovieResponse(
     @SerializedName(value = "release_date", alternate = ["first_air_date"])
     val releaseDate: String,
     @SerializedName("vote_average")
-    val voteAverage: Float
-) {
-
+    val voteAverage: Float,
     @SerializedName("poster_path")
-    val posterPath: String? = null
-        get() = "https://image.tmdb.org/t/p/w500$field"
-}
+    val posterPath: String
+)

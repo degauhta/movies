@@ -7,7 +7,8 @@
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground"
     android:padding="@dimen/material_margin_normal"
-    android:paddingVertical="@dimen/material_margin_normal">
+    android:paddingVertical="@dimen/material_margin_normal"
+    tools:background="@color/blueDark">
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/image_preview"
@@ -23,6 +24,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/material_margin_small"
+        android:layout_marginEnd="@dimen/material_margin_small"
         android:ellipsize="end"
         android:maxLines="2"
         android:textAllCaps="true"
@@ -32,7 +34,7 @@
         app:layout_constraintEnd_toStartOf="@+id/movie_rating"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/image_preview"
-        tools:text="Мир дикого запада" />
+        tools:text="@tools:sample/lorem/random" />
 
     <androidx.appcompat.widget.AppCompatRatingBar
         android:id="@+id/movie_rating"
@@ -43,7 +45,6 @@
         android:numStars="5"
         android:progressBackgroundTint="@color/colorControlNormal"
         android:stepSize="0.5"
-        app:layout_constraintBottom_toBottomOf="@id/description"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/description"
         tools:rating="5" />

@@ -2,7 +2,6 @@ package ru.androidschool.intensiv.presentation.feed
 
 import android.os.Bundle
 import android.view.*
-import androidx.annotation.StringRes
 import androidx.navigation.fragment.findNavController
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
@@ -11,8 +10,8 @@ import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.data.repository.MovieRepository
 import ru.androidschool.intensiv.databinding.FeedHeaderBinding
 import ru.androidschool.intensiv.databinding.FragmentFeedBinding
-import ru.androidschool.intensiv.models.data.response.MoviesResponse
 import ru.androidschool.intensiv.models.domain.Movie
+import ru.androidschool.intensiv.models.domain.MovieTypes
 import ru.androidschool.intensiv.presentation.BaseFragment
 import ru.androidschool.intensiv.presentation.OffsetItemDecorator
 import ru.androidschool.intensiv.presentation.converters.MovieConverter
@@ -33,7 +32,7 @@ class FeedFragment : BaseFragment<FragmentFeedBinding>() {
         _searchBinding = FeedHeaderBinding.bind(binding.root)
 
         rxCompositeDisposable.add(
-            searchBinding.searchToolbar.observer()
+            searchBinding.searchToolbar.observeSearchText()
                 .subscribe {
                     openSearch(it)
                 }
@@ -43,29 +42,48 @@ class FeedFragment : BaseFragment<FragmentFeedBinding>() {
         binding.moviesRecyclerView.addItemDecoration(OffsetItemDecorator())
         binding.moviesRecyclerView.adapter = adapter
 
-        binding.moviesProgressbar.show()
-        getMovies(MovieRepository.getTopRatedMovies(), R.string.recommended)
-        getMovies(MovieRepository.getPopularMovies(), R.string.popular)
-        getMovies(MovieRepository.getNowPlayingMovies(), R.string.upcoming)
+        loadData()
     }
 
-    private fun getMovies(source: Single<MoviesResponse>, @StringRes title: Int) {
-        rxCompositeDisposable.add(source
-            .map {
-                MovieConverter().convert(it) { movie -> openMovieDetails(movie) }
+    private fun loadData() {
+        rxCompositeDisposable.add(
+            Single.zip(
+                MovieRepository.getTopRatedMovies(),
+                MovieRepository.getPopularMovies(),
+                MovieRepository.getNowPlayingMovies()
+            ) { top, popular, nowPlaying ->
+                mapOf(
+                    MovieTypes.TOP to top,
+                    MovieTypes.POPULAR to popular,
+                    MovieTypes.NOW_PLAYING to nowPlaying
+                )
             }
-            .ioToMainTransform()
-            .doFinally { binding.moviesProgressbar.hide() }
-            .subscribe(
-                { movies -> handleSuccess(movies, title) },
-                ::handleError
-            )
+                .map { it ->
+                    it.mapValues { keyMoviesResponse ->
+                        MovieConverter().convert(keyMoviesResponse.value) { movie ->
+                            openMovieDetails(movie)
+                        }
+                    }
+                }
+                .ioToMainTransform()
+                .doOnSubscribe { binding.moviesProgressbar.show() }
+                .doFinally { binding.moviesProgressbar.hide() }
+                .subscribe(::handleSuccess, ::handleError)
         )
     }
 
-    private fun handleSuccess(movies: List<MovieItem>, @StringRes title: Int) {
-        adapter.apply { add(MainCardContainer(title = title, items = movies)) }
-        binding.moviesProgressbar.hide()
+    private fun handleSuccess(keyItems: Map<MovieTypes, List<MovieItem>>) {
+        adapter.apply {
+            keyItems[MovieTypes.TOP]?.let {
+                add(MainCardContainer(title = R.string.recommended, items = it))
+            }
+            keyItems[MovieTypes.POPULAR]?.let {
+                add(MainCardContainer(title = R.string.popular, items = it))
+            }
+            keyItems[MovieTypes.NOW_PLAYING]?.let {
+                add(MainCardContainer(title = R.string.upcoming, items = it))
+            }
+        }
     }
 
     private fun openMovieDetails(movie: Movie) {

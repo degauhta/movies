@@ -26,7 +26,6 @@ class FeedFragment : BaseFragment<FragmentFeedBinding>() {
     private val searchBinding get() = _searchBinding!!
 
     private val adapter by lazy { GroupAdapter<GroupieViewHolder>() }
-    private val adapterPopular by lazy { GroupAdapter<GroupieViewHolder>() }
 
     override fun createViewBinding(inflater: LayoutInflater, container: ViewGroup?) =
         FragmentFeedBinding.inflate(inflater, container, false)
@@ -42,10 +41,9 @@ class FeedFragment : BaseFragment<FragmentFeedBinding>() {
             }
         }
 
+        adapter.clear()
         binding.moviesRecyclerView.addItemDecoration(OffsetItemDecorator())
         binding.moviesRecyclerView.adapter = adapter
-        binding.moviesPopularRecyclerView.addItemDecoration(OffsetItemDecorator())
-        binding.moviesPopularRecyclerView.adapter = adapterPopular
 
         getMovies()
     }
@@ -58,9 +56,16 @@ class FeedFragment : BaseFragment<FragmentFeedBinding>() {
                 respose: Response<MoviesResponse>
             ) {
                 respose.body()?.let { body ->
-                    val tvShowsItems = MovieConverter().convert(body) { openMovieDetails(it) }
+                    val topMovies = MovieConverter().convert(body) { openMovieDetails(it) }
                     binding.moviesProgressbar.hide()
-                    adapter.apply { addAll(tvShowsItems) }
+                    adapter.apply {
+                        add(
+                            MainCardContainer(
+                                title = R.string.recommended,
+                                items = topMovies
+                            )
+                        )
+                    }
 
                     getPopularMovies()
                 }
@@ -81,9 +86,16 @@ class FeedFragment : BaseFragment<FragmentFeedBinding>() {
                 respose: Response<MoviesResponse>
             ) {
                 respose.body()?.let { body ->
-                    val tvShowsItems = MovieConverter().convert(body) { openMovieDetails(it) }
+                    val popularMovies = MovieConverter().convert(body) { openMovieDetails(it) }
                     binding.moviesProgressbar.hide()
-                    adapterPopular.apply { addAll(tvShowsItems) }
+                    adapter.apply {
+                        add(
+                            MainCardContainer(
+                                title = R.string.popular,
+                                items = popularMovies
+                            )
+                        )
+                    }
                 }
             }
 

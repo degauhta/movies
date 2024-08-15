@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import com.google.android.material.chip.Chip
-import com.squareup.picasso.Picasso
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import retrofit2.Call
@@ -23,6 +22,7 @@ import ru.androidschool.intensiv.presentation.BaseFragment
 import ru.androidschool.intensiv.presentation.OffsetItemDecorator
 import ru.androidschool.intensiv.presentation.converters.ActorConverter
 import ru.androidschool.intensiv.presentation.feed.FeedFragment
+import ru.androidschool.intensiv.utils.loadImage
 import timber.log.Timber
 
 class MovieDetailsFragment : BaseFragment<FragmentMovieDetailsBinding>() {
@@ -55,10 +55,10 @@ class MovieDetailsFragment : BaseFragment<FragmentMovieDetailsBinding>() {
     }
 
     private fun initBaseViews(movie: Movie) {
-        Picasso.get()
-            .load(movie.imageUrl)
-            .placeholder(R.drawable.item_placeholder)
-            .into(binding.image)
+        binding.image.loadImage(
+            imageUrl = movie.imageUrl,
+            placeholderResId = R.drawable.item_placeholder
+        )
 
         binding.title.text = movie.title
         binding.rating.rating = movie.rating

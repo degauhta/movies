@@ -3,6 +3,7 @@ package ru.androidschool.intensiv.presentation.converters
 import ru.androidschool.intensiv.models.data.response.MoviesResponse
 import ru.androidschool.intensiv.models.domain.Movie
 import ru.androidschool.intensiv.presentation.feed.MovieItem
+import ru.androidschool.intensiv.utils.createImageUrl
 
 class MovieConverter {
 
@@ -20,11 +21,7 @@ class MovieConverter {
         }
     }
 
-    // todo move to domain converter
-    private fun String?.createImageUrl() = this?.let { "$POSTER_DEFAULT_PATH$this" }
-
     companion object {
         const val HALF_IMDB_RATING = 2
-        const val POSTER_DEFAULT_PATH = "https://image.tmdb.org/t/p/w500"
     }
 }

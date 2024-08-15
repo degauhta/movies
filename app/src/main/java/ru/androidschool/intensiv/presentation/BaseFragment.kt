@@ -9,12 +9,16 @@ import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.navigation.navOptions
 import androidx.viewbinding.ViewBinding
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 import ru.androidschool.intensiv.R
+import timber.log.Timber
 
 abstract class BaseFragment<Binding : ViewBinding> : Fragment() {
 
     protected val binding: Binding get() = _binding!!
     private var _binding: Binding? = null
+
+    protected val rxCompositeDisposable = CompositeDisposable()
 
     protected val options = navOptions {
         anim {
@@ -39,6 +43,16 @@ abstract class BaseFragment<Binding : ViewBinding> : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        rxCompositeDisposable.clear()
+    }
+
+    fun handleError(error: Throwable) {
+        showToast(R.string.load_data_error)
+        Timber.e(error)
     }
 
     fun showToast(@StringRes stringRes: Int) {

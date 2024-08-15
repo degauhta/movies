@@ -9,9 +9,6 @@ import androidx.core.view.isVisible
 import com.google.android.material.chip.Chip
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.data.repository.MovieRepository
 import ru.androidschool.intensiv.databinding.FragmentMovieDetailsBinding
@@ -22,8 +19,8 @@ import ru.androidschool.intensiv.presentation.BaseFragment
 import ru.androidschool.intensiv.presentation.OffsetItemDecorator
 import ru.androidschool.intensiv.presentation.converters.ActorConverter
 import ru.androidschool.intensiv.presentation.feed.FeedFragment
+import ru.androidschool.intensiv.utils.ioToMainTransform
 import ru.androidschool.intensiv.utils.loadImage
-import timber.log.Timber
 
 class MovieDetailsFragment : BaseFragment<FragmentMovieDetailsBinding>() {
 
@@ -49,6 +46,7 @@ class MovieDetailsFragment : BaseFragment<FragmentMovieDetailsBinding>() {
         movie?.let {
             initBaseViews(it)
             getDetails(it.id, it.isMovie)
+            getTvShowCredits(it.id, it.isMovie)
         } ?: {
             showToast(R.string.load_data_error)
         }
@@ -71,54 +69,39 @@ class MovieDetailsFragment : BaseFragment<FragmentMovieDetailsBinding>() {
     }
 
     private fun getDetails(id: Int, isMovie: Boolean) {
-        MovieRepository.getMovieDetails(id, isMovie).enqueue(object : Callback<DetailsResponse> {
-
-            override fun onResponse(
-                call: Call<DetailsResponse>,
-                response: Response<DetailsResponse>
-            ) {
-                response.body()?.let {
-                    if (it.genres.isNotEmpty()) {
-                        binding.genresChipGroup.removeAllViews()
-                    }
-                    it.genres.forEach { genre ->
-                        val chip = Chip(requireActivity()).apply {
-                            text = genre.name
-                            isClickable = false
-                            isCloseIconVisible = false
-                        }
-                        binding.genresChipGroup.addView(chip)
-                    }
-                }
-                getTvShowCredits(id, isMovie)
-            }
-
-            override fun onFailure(call: Call<DetailsResponse>, error: Throwable) {
-                showToast(R.string.load_data_error)
-                Timber.e(error)
-            }
-        })
+        rxCompositeDisposable.add(
+            MovieRepository.getMovieDetails(id, isMovie)
+                .ioToMainTransform()
+                .subscribe(::handleDetailsResponse, ::handleError)
+        )
     }
 
     private fun getTvShowCredits(id: Int, isMovie: Boolean) {
-        MovieRepository.getMovieCredits(id, isMovie).enqueue(object : Callback<CreditsResponse> {
+        rxCompositeDisposable.add(
+            MovieRepository.getMovieCredits(id, isMovie)
+                .ioToMainTransform()
+                .subscribe(::handleCreditsResponse, ::handleError)
+        )
+    }
 
-            override fun onResponse(
-                call: Call<CreditsResponse>,
-                response: Response<CreditsResponse>
-            ) {
-                response.body()?.let {
-                    if (it.cast.isNotEmpty()) {
-                        binding.actorsTitle.isVisible = true
-                    }
-                    actorsAdapter.apply { addAll(ActorConverter().convert(it)) }
-                }
+    private fun handleDetailsResponse(detailsResponse: DetailsResponse) {
+        if (detailsResponse.genres.isNotEmpty()) {
+            binding.genresChipGroup.removeAllViews()
+        }
+        detailsResponse.genres.forEach { genre ->
+            val chip = Chip(requireActivity()).apply {
+                text = genre.name
+                isClickable = false
+                isCloseIconVisible = false
             }
+            binding.genresChipGroup.addView(chip)
+        }
+    }
 
-            override fun onFailure(call: Call<CreditsResponse>, error: Throwable) {
-                showToast(R.string.load_data_error)
-                Timber.e(error)
-            }
-        })
+    private fun handleCreditsResponse(creditsResponse: CreditsResponse) {
+        if (creditsResponse.cast.isNotEmpty()) {
+            binding.actorsTitle.isVisible = true
+        }
+        actorsAdapter.apply { addAll(ActorConverter().convert(creditsResponse)) }
     }
 }

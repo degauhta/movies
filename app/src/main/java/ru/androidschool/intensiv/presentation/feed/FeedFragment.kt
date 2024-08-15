@@ -2,23 +2,21 @@ package ru.androidschool.intensiv.presentation.feed
 
 import android.os.Bundle
 import android.view.*
+import androidx.annotation.StringRes
 import androidx.navigation.fragment.findNavController
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import io.reactivex.rxjava3.core.Single
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.data.repository.MovieRepository
-import ru.androidschool.intensiv.models.domain.Movie
 import ru.androidschool.intensiv.databinding.FeedHeaderBinding
 import ru.androidschool.intensiv.databinding.FragmentFeedBinding
 import ru.androidschool.intensiv.models.data.response.MoviesResponse
+import ru.androidschool.intensiv.models.domain.Movie
 import ru.androidschool.intensiv.presentation.BaseFragment
 import ru.androidschool.intensiv.presentation.OffsetItemDecorator
-import ru.androidschool.intensiv.presentation.afterTextChanged
 import ru.androidschool.intensiv.presentation.converters.MovieConverter
-import timber.log.Timber
+import ru.androidschool.intensiv.utils.ioToMainTransform
 
 class FeedFragment : BaseFragment<FragmentFeedBinding>() {
 
@@ -34,76 +32,40 @@ class FeedFragment : BaseFragment<FragmentFeedBinding>() {
         super.onViewCreated(view, savedInstanceState)
         _searchBinding = FeedHeaderBinding.bind(binding.root)
 
-        searchBinding.searchToolbar.binding.searchEditText.afterTextChanged {
-            Timber.d(it.toString())
-            if (it.toString().length > MIN_LENGTH) {
-                openSearch(it.toString())
-            }
-        }
+        rxCompositeDisposable.add(
+            searchBinding.searchToolbar.observer()
+                .subscribe {
+                    openSearch(it)
+                }
+        )
 
         adapter.clear()
         binding.moviesRecyclerView.addItemDecoration(OffsetItemDecorator())
         binding.moviesRecyclerView.adapter = adapter
 
-        getMovies()
+        binding.moviesProgressbar.show()
+        getMovies(MovieRepository.getTopRatedMovies(), R.string.recommended)
+        getMovies(MovieRepository.getPopularMovies(), R.string.popular)
+        getMovies(MovieRepository.getNowPlayingMovies(), R.string.upcoming)
     }
 
-    private fun getMovies() {
-        MovieRepository.getTopRatedMovies().enqueue(object : Callback<MoviesResponse> {
-
-            override fun onResponse(
-                call: Call<MoviesResponse>,
-                respose: Response<MoviesResponse>
-            ) {
-                respose.body()?.let { body ->
-                    val topMovies = MovieConverter().convert(body) { openMovieDetails(it) }
-                    binding.moviesProgressbar.hide()
-                    adapter.apply {
-                        add(
-                            MainCardContainer(
-                                title = R.string.recommended,
-                                items = topMovies
-                            )
-                        )
-                    }
-
-                    getPopularMovies()
-                }
+    private fun getMovies(source: Single<MoviesResponse>, @StringRes title: Int) {
+        rxCompositeDisposable.add(source
+            .map {
+                MovieConverter().convert(it) { movie -> openMovieDetails(movie) }
             }
-
-            override fun onFailure(call: Call<MoviesResponse>, error: Throwable) {
-                showToast(R.string.load_data_error)
-                Timber.e(error)
-            }
-        })
+            .ioToMainTransform()
+            .doFinally { binding.moviesProgressbar.hide() }
+            .subscribe(
+                { movies -> handleSuccess(movies, title) },
+                ::handleError
+            )
+        )
     }
 
-    private fun getPopularMovies() {
-        MovieRepository.getPopularMovies().enqueue(object : Callback<MoviesResponse> {
-
-            override fun onResponse(
-                call: Call<MoviesResponse>,
-                respose: Response<MoviesResponse>
-            ) {
-                respose.body()?.let { body ->
-                    val popularMovies = MovieConverter().convert(body) { openMovieDetails(it) }
-                    binding.moviesProgressbar.hide()
-                    adapter.apply {
-                        add(
-                            MainCardContainer(
-                                title = R.string.popular,
-                                items = popularMovies
-                            )
-                        )
-                    }
-                }
-            }
-
-            override fun onFailure(call: Call<MoviesResponse>, error: Throwable) {
-                showToast(R.string.load_data_error)
-                Timber.e(error)
-            }
-        })
+    private fun handleSuccess(movies: List<MovieItem>, @StringRes title: Int) {
+        adapter.apply { add(MainCardContainer(title = title, items = movies)) }
+        binding.moviesProgressbar.hide()
     }
 
     private fun openMovieDetails(movie: Movie) {
@@ -133,7 +95,6 @@ class FeedFragment : BaseFragment<FragmentFeedBinding>() {
     }
 
     companion object {
-        const val MIN_LENGTH = 3
         const val MOVIE_KEY = "MOVIE_KEY"
         const val KEY_SEARCH = "search"
     }

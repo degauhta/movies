@@ -3,6 +3,7 @@ package ru.androidschool.intensiv.data.remote
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
+import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.androidschool.intensiv.BuildConfig
 
@@ -10,7 +11,7 @@ object MovieApiClient {
 
     private val httpClient by lazy {
         OkHttpClient.Builder()
-            .addInterceptor(LoggingInterceptor())
+            .addInterceptor(BaseQueryInterceptor())
             .addInterceptor(
                 HttpLoggingInterceptor(PrettyJsonLogger()).apply {
                     level = if (BuildConfig.DEBUG) {
@@ -27,6 +28,7 @@ object MovieApiClient {
         Retrofit.Builder()
             .baseUrl(BuildConfig.TMDB_API_PATH)
             .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
             .client(httpClient)
             .build()
     }

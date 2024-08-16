@@ -50,7 +50,7 @@ abstract class BaseFragment<Binding : ViewBinding> : Fragment() {
         rxCompositeDisposable.clear()
     }
 
-    fun handleError(error: Throwable) {
+    fun handleError(error: Throwable?) {
         showToast(R.string.load_data_error)
         Timber.e(error)
     }

@@ -7,7 +7,9 @@ import android.view.View
 import android.widget.FrameLayout
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.databinding.SearchToolbarBinding
@@ -50,6 +52,8 @@ class SearchBar @JvmOverloads constructor(
         .filter { it.length > MIN_LENGTH }
         .debounce(DEBOUNCE_TIME, TimeUnit.MILLISECONDS)
         .distinctUntilChanged()
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
 
     override fun onFinishInflate() {
         super.onFinishInflate()

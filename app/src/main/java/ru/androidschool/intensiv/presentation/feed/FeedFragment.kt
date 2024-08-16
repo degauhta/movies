@@ -16,6 +16,7 @@ import ru.androidschool.intensiv.presentation.BaseFragment
 import ru.androidschool.intensiv.presentation.OffsetItemDecorator
 import ru.androidschool.intensiv.presentation.converters.MovieConverter
 import ru.androidschool.intensiv.utils.ioToMainTransform
+import ru.androidschool.intensiv.utils.onErrorReturnEmptyList
 
 class FeedFragment : BaseFragment<FragmentFeedBinding>() {
 
@@ -48,9 +49,9 @@ class FeedFragment : BaseFragment<FragmentFeedBinding>() {
     private fun loadData() {
         rxCompositeDisposable.add(
             Single.zip(
-                MovieRepository.getTopRatedMovies(),
-                MovieRepository.getPopularMovies(),
-                MovieRepository.getNowPlayingMovies()
+                MovieRepository.getTopRatedMovies().onErrorReturnEmptyList(),
+                MovieRepository.getPopularMovies().onErrorReturnEmptyList(),
+                MovieRepository.getNowPlayingMovies().onErrorReturnEmptyList()
             ) { top, popular, nowPlaying ->
                 mapOf(
                     MovieTypes.TOP to top,
@@ -74,14 +75,18 @@ class FeedFragment : BaseFragment<FragmentFeedBinding>() {
 
     private fun handleSuccess(keyItems: Map<MovieTypes, List<MovieItem>>) {
         adapter.apply {
-            keyItems[MovieTypes.TOP]?.let {
+            keyItems[MovieTypes.TOP].takeIf { !it.isNullOrEmpty() }?.let {
                 add(MainCardContainer(title = R.string.recommended, items = it))
             }
-            keyItems[MovieTypes.POPULAR]?.let {
+            keyItems[MovieTypes.POPULAR].takeIf { !it.isNullOrEmpty() }?.let {
                 add(MainCardContainer(title = R.string.popular, items = it))
             }
-            keyItems[MovieTypes.NOW_PLAYING]?.let {
+            keyItems[MovieTypes.NOW_PLAYING].takeIf { !it.isNullOrEmpty() }?.let {
                 add(MainCardContainer(title = R.string.upcoming, items = it))
+            }
+        }.also {
+            if (adapter.itemCount == 0) {
+                handleError(null)
             }
         }
     }

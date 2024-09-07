@@ -3,6 +3,7 @@ package ru.androidschool.intensiv.presentation.converters
 import ru.androidschool.intensiv.models.data.response.MoviesResponse
 import ru.androidschool.intensiv.models.domain.Movie
 import ru.androidschool.intensiv.presentation.tvshows.TvShowItem
+import ru.androidschool.intensiv.utils.createImageUrl
 
 class TvShowConverter {
 
@@ -19,8 +20,4 @@ class TvShowConverter {
             TvShowItem(movie = tvShow, onClick = onClick)
         }
     }
-
-    // todo move to domain converter
-    private fun String?.createImageUrl() =
-        this?.let { "${MovieConverter.POSTER_DEFAULT_PATH}$this" }
 }

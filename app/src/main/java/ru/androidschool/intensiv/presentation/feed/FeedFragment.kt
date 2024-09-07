@@ -5,20 +5,18 @@ import android.view.*
 import androidx.navigation.fragment.findNavController
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import io.reactivex.rxjava3.core.Single
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.data.repository.MovieRepository
-import ru.androidschool.intensiv.models.domain.Movie
 import ru.androidschool.intensiv.databinding.FeedHeaderBinding
 import ru.androidschool.intensiv.databinding.FragmentFeedBinding
-import ru.androidschool.intensiv.models.data.response.MoviesResponse
+import ru.androidschool.intensiv.models.domain.Movie
+import ru.androidschool.intensiv.models.domain.MovieTypes
 import ru.androidschool.intensiv.presentation.BaseFragment
 import ru.androidschool.intensiv.presentation.OffsetItemDecorator
-import ru.androidschool.intensiv.presentation.afterTextChanged
 import ru.androidschool.intensiv.presentation.converters.MovieConverter
-import timber.log.Timber
+import ru.androidschool.intensiv.utils.ioToMainTransform
+import ru.androidschool.intensiv.utils.onErrorReturnEmptyList
 
 class FeedFragment : BaseFragment<FragmentFeedBinding>() {
 
@@ -26,7 +24,6 @@ class FeedFragment : BaseFragment<FragmentFeedBinding>() {
     private val searchBinding get() = _searchBinding!!
 
     private val adapter by lazy { GroupAdapter<GroupieViewHolder>() }
-    private val adapterPopular by lazy { GroupAdapter<GroupieViewHolder>() }
 
     override fun createViewBinding(inflater: LayoutInflater, container: ViewGroup?) =
         FragmentFeedBinding.inflate(inflater, container, false)
@@ -35,63 +32,63 @@ class FeedFragment : BaseFragment<FragmentFeedBinding>() {
         super.onViewCreated(view, savedInstanceState)
         _searchBinding = FeedHeaderBinding.bind(binding.root)
 
-        searchBinding.searchToolbar.binding.searchEditText.afterTextChanged {
-            Timber.d(it.toString())
-            if (it.toString().length > MIN_LENGTH) {
-                openSearch(it.toString())
-            }
-        }
+        rxCompositeDisposable.add(
+            searchBinding.searchToolbar.observeSearchText()
+                .subscribe {
+                    openSearch(it)
+                }
+        )
 
+        adapter.clear()
         binding.moviesRecyclerView.addItemDecoration(OffsetItemDecorator())
         binding.moviesRecyclerView.adapter = adapter
-        binding.moviesPopularRecyclerView.addItemDecoration(OffsetItemDecorator())
-        binding.moviesPopularRecyclerView.adapter = adapterPopular
 
-        getMovies()
+        loadData()
     }
 
-    private fun getMovies() {
-        MovieRepository.getTopRatedMovies().enqueue(object : Callback<MoviesResponse> {
-
-            override fun onResponse(
-                call: Call<MoviesResponse>,
-                respose: Response<MoviesResponse>
-            ) {
-                respose.body()?.let { body ->
-                    val tvShowsItems = MovieConverter().convert(body) { openMovieDetails(it) }
-                    binding.moviesProgressbar.hide()
-                    adapter.apply { addAll(tvShowsItems) }
-
-                    getPopularMovies()
+    private fun loadData() {
+        rxCompositeDisposable.add(
+            Single.zip(
+                MovieRepository.getTopRatedMovies().onErrorReturnEmptyList(),
+                MovieRepository.getPopularMovies().onErrorReturnEmptyList(),
+                MovieRepository.getNowPlayingMovies().onErrorReturnEmptyList()
+            ) { top, popular, nowPlaying ->
+                mapOf(
+                    MovieTypes.TOP to top,
+                    MovieTypes.POPULAR to popular,
+                    MovieTypes.NOW_PLAYING to nowPlaying
+                )
+            }
+                .map { it ->
+                    it.mapValues { keyMoviesResponse ->
+                        MovieConverter().convert(keyMoviesResponse.value) { movie ->
+                            openMovieDetails(movie)
+                        }
+                    }
                 }
-            }
-
-            override fun onFailure(call: Call<MoviesResponse>, error: Throwable) {
-                showToast(R.string.load_data_error)
-                Timber.e(error)
-            }
-        })
+                .ioToMainTransform()
+                .doOnSubscribe { binding.moviesProgressbar.show() }
+                .doFinally { binding.moviesProgressbar.hide() }
+                .subscribe(::handleSuccess, ::handleError)
+        )
     }
 
-    private fun getPopularMovies() {
-        MovieRepository.getPopularMovies().enqueue(object : Callback<MoviesResponse> {
-
-            override fun onResponse(
-                call: Call<MoviesResponse>,
-                respose: Response<MoviesResponse>
-            ) {
-                respose.body()?.let { body ->
-                    val tvShowsItems = MovieConverter().convert(body) { openMovieDetails(it) }
-                    binding.moviesProgressbar.hide()
-                    adapterPopular.apply { addAll(tvShowsItems) }
-                }
+    private fun handleSuccess(keyItems: Map<MovieTypes, List<MovieItem>>) {
+        adapter.apply {
+            keyItems[MovieTypes.TOP].takeIf { !it.isNullOrEmpty() }?.let {
+                add(MainCardContainer(title = R.string.recommended, items = it))
             }
-
-            override fun onFailure(call: Call<MoviesResponse>, error: Throwable) {
-                showToast(R.string.load_data_error)
-                Timber.e(error)
+            keyItems[MovieTypes.POPULAR].takeIf { !it.isNullOrEmpty() }?.let {
+                add(MainCardContainer(title = R.string.popular, items = it))
             }
-        })
+            keyItems[MovieTypes.NOW_PLAYING].takeIf { !it.isNullOrEmpty() }?.let {
+                add(MainCardContainer(title = R.string.upcoming, items = it))
+            }
+        }.also {
+            if (adapter.itemCount == 0) {
+                handleError(null)
+            }
+        }
     }
 
     private fun openMovieDetails(movie: Movie) {
@@ -121,7 +118,6 @@ class FeedFragment : BaseFragment<FragmentFeedBinding>() {
     }
 
     companion object {
-        const val MIN_LENGTH = 3
         const val MOVIE_KEY = "MOVIE_KEY"
         const val KEY_SEARCH = "search"
     }

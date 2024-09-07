@@ -1,30 +1,34 @@
 package ru.androidschool.intensiv.data.repository
 
-import ru.androidschool.intensiv.BuildConfig
+import io.reactivex.rxjava3.core.Single
 import ru.androidschool.intensiv.data.remote.MovieApiClient
+import ru.androidschool.intensiv.models.data.response.CreditsResponse
+import ru.androidschool.intensiv.models.data.response.DetailsResponse
+import ru.androidschool.intensiv.models.data.response.MoviesResponse
 
 object MovieRepository {
 
     private val api = MovieApiClient
-    private const val API_KEY = BuildConfig.THE_MOVIE_DATABASE_API
     private const val MOVIE_PATH_KEY = "movie"
     private const val TV_PATH_KEY = "tv"
 
-    fun getTopRatedMovies() = api.apiClient.getTopRatedMovies(apiKey = API_KEY)
+    fun getTopRatedMovies(): Single<MoviesResponse> = api.apiClient.getTopRatedMovies()
 
-    fun getPopularMovies() = api.apiClient.getPopularMovies(apiKey = API_KEY)
+    fun getPopularMovies(): Single<MoviesResponse> = api.apiClient.getPopularMovies()
 
-    fun getTopRatedTvShow() = api.apiClient.getTopRatedTvShow(apiKey = API_KEY)
+    fun getNowPlayingMovies(): Single<MoviesResponse> = api.apiClient.getNowPlayingMovies()
 
-    fun getMovieDetails(id: Int, isMovie: Boolean) = api.apiClient.getMovieDetails(
-        apiKey = API_KEY,
-        id = id,
-        movieType = if (isMovie) MOVIE_PATH_KEY else TV_PATH_KEY
-    )
+    fun getTopRatedTvShow(): Single<MoviesResponse> = api.apiClient.getTopRatedTvShow()
 
-    fun getMovieCredits(id: Int, isMovie: Boolean) = api.apiClient.getMovieCredits(
-        apiKey = API_KEY,
-        id = id,
-        movieType = if (isMovie) MOVIE_PATH_KEY else TV_PATH_KEY
-    )
+    fun getMovieDetails(id: Int, isMovie: Boolean): Single<DetailsResponse> =
+        api.apiClient.getMovieDetails(
+            id = id,
+            movieType = if (isMovie) MOVIE_PATH_KEY else TV_PATH_KEY
+        )
+
+    fun getMovieCredits(id: Int, isMovie: Boolean): Single<CreditsResponse> =
+        api.apiClient.getMovieCredits(
+            id = id,
+            movieType = if (isMovie) MOVIE_PATH_KEY else TV_PATH_KEY
+        )
 }

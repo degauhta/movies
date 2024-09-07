@@ -20,9 +20,14 @@ class OffsetItemDecorator : RecyclerView.ItemDecoration() {
         val orientation =
             (parent.layoutManager as? LinearLayoutManager)?.orientation ?: RecyclerView.VERTICAL
 
-        if (itemPosition > 0 && orientation == LinearLayoutManager.HORIZONTAL) {
-            outRect.left =
-                view.context.resources.getDimensionPixelOffset(R.dimen.material_margin_normal)
+        when {
+            itemPosition > 0 && orientation == LinearLayoutManager.HORIZONTAL ->
+                outRect.left =
+                    view.context.resources.getDimensionPixelOffset(R.dimen.material_margin_normal)
+
+            itemPosition > 0 && orientation == LinearLayoutManager.VERTICAL ->
+                outRect.top =
+                    view.context.resources.getDimensionPixelOffset(R.dimen.material_margin_normal)
         }
     }
 }

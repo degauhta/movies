@@ -57,4 +57,9 @@ ext {
     groupieVersion = '2.10.1'
 
     retrofitVersion = '2.11.0'
+    loggingInterceptor = '4.12.0'
+
+    rxAndroid = '3.0.2'
+    rxJava = '3.1.9'
+    rxRetrofitAdapter = '2.11.0'
 }

@@ -6,6 +6,7 @@ import ru.androidschool.intensiv.data.database.MovieDatabase
 import ru.androidschool.intensiv.data.remote.MovieApiClient
 import ru.androidschool.intensiv.data.repository.FeedRepositoryImpl
 import ru.androidschool.intensiv.domain.interactor.FeedInteractor
+import ru.androidschool.intensiv.domain.interactor.MovieDetailsInteractor
 import ru.androidschool.intensiv.domain.repository.FeedRepository
 
 object ServiceLocator {
@@ -23,4 +24,6 @@ object ServiceLocator {
         )
 
     fun provideFeedInteractor() = FeedInteractor(provideFeedRepository())
+
+    fun provideMovieInteractor() = MovieDetailsInteractor()
 }

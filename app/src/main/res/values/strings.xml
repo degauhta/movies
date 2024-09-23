@@ -35,8 +35,10 @@
 
     <string name="load_data_error_title">Данные не удалось загрузить</string>
     <string name="load_data_error_subtitle">Проверьте соединение с интернетом и перезапустите приложение</string>
-    <string name="load_update_error">Данные устарели</string>
+    <string name="load_update_error">Данные не удалось обновить</string>
 
     <string name="button_got_it">Хорошо</string>
+
+    <string name="default_error">Произошла ошибка!</string>
 
 </resources>

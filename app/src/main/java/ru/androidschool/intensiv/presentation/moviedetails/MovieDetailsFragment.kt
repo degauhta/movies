@@ -10,25 +10,44 @@ import com.google.android.material.chip.Chip
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import ru.androidschool.intensiv.R
-import ru.androidschool.intensiv.data.repository.MovieRepository
+import ru.androidschool.intensiv.ServiceLocator
 import ru.androidschool.intensiv.databinding.FragmentMovieDetailsBinding
-import ru.androidschool.intensiv.models.data.response.CreditsResponse
-import ru.androidschool.intensiv.models.data.response.DetailsResponse
+import ru.androidschool.intensiv.models.domain.Genre
 import ru.androidschool.intensiv.models.domain.Movie
 import ru.androidschool.intensiv.models.presentation.moviedetail.MovieDetailsArgs
-import ru.androidschool.intensiv.presentation.BaseFragmentOld
+import ru.androidschool.intensiv.models.presentation.moviedetail.MovieDetailsScreenAction
+import ru.androidschool.intensiv.models.presentation.moviedetail.MovieDetailsScreenModel
+import ru.androidschool.intensiv.presentation.BaseFragment
 import ru.androidschool.intensiv.presentation.OffsetItemDecorator
 import ru.androidschool.intensiv.presentation.converters.ActorConverter
 import ru.androidschool.intensiv.presentation.feed.FeedFragment
-import ru.androidschool.intensiv.utils.ioToMainTransform
 import ru.androidschool.intensiv.utils.loadImage
+import ru.androidschool.intensiv.models.presentation.moviedetail.MovieDetailsScreenAction as Action
+import ru.androidschool.intensiv.models.presentation.moviedetail.MovieDetailsScreenEffect as Effect
+import ru.androidschool.intensiv.models.presentation.moviedetail.MovieDetailsScreenState as State
+import ru.androidschool.intensiv.presentation.moviedetails.MovieDetailsViewModel as ViewModel
 
-class MovieDetailsFragment : BaseFragmentOld<FragmentMovieDetailsBinding>() {
+class MovieDetailsFragment : BaseFragment<State, Effect, Action, ViewModel, FragmentMovieDetailsBinding>() {
 
     private val actorsAdapter by lazy { GroupAdapter<GroupieViewHolder>() }
 
     override fun createViewBinding(inflater: LayoutInflater, container: ViewGroup?) =
         FragmentMovieDetailsBinding.inflate(inflater, container, false)
+
+    override fun createVm(): ViewModel {
+        return ViewModel(
+            ServiceLocator.provideMovieInteractor(),
+            ActorConverter()
+        )
+    }
+
+    override fun renderState(state: State) {
+        when (state) {
+            is State.Content -> renderUi(state.screenModel)
+        }
+    }
+
+    override fun renderEffect(effect: Effect) = Unit // todo
 
     @Suppress("DEPRECATION")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -37,20 +56,22 @@ class MovieDetailsFragment : BaseFragmentOld<FragmentMovieDetailsBinding>() {
         binding.toolbar.setNavigationOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
+        binding.actorsRecycler.adapter = actorsAdapter
+        binding.actorsRecycler.addItemDecoration(OffsetItemDecorator())
 
-        val movie = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        val args = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             arguments?.getParcelable(FeedFragment.MOVIE_KEY, MovieDetailsArgs::class.java)
         } else {
             arguments?.getParcelable(FeedFragment.MOVIE_KEY) as? MovieDetailsArgs
         }
 
-        movie?.let {
-            //initBaseViews(it)
-            getDetails(it.id, it.isMovie)
-            getTvShowCredits(it.id, it.isMovie)
-        } ?: {
-            showToast(R.string.load_data_error_title)
-        }
+        viewModel.handleAction(Action.Load(args))
+    }
+
+    private fun renderUi(screenModel: MovieDetailsScreenModel) {
+        initBaseViews(screenModel.movie)
+        screenModel.genre.takeIf { it.isNotEmpty() }?.let { showGenres(it) }
+        screenModel.actors.takeIf { it.isNotEmpty() }?.let { showActors(it) }
     }
 
     private fun initBaseViews(movie: Movie) {
@@ -65,31 +86,17 @@ class MovieDetailsFragment : BaseFragmentOld<FragmentMovieDetailsBinding>() {
         binding.overviewTitle.isVisible = movie.overview.isNotEmpty()
         binding.overview.text = movie.overview
 
-        binding.actorsRecycler.adapter = actorsAdapter
-        binding.actorsRecycler.addItemDecoration(OffsetItemDecorator())
+        binding.favoriteCheckbox.isChecked = movie.isFavorite
+        binding.favoriteCheckbox.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.handleAction(MovieDetailsScreenAction.FavoriteClick(isChecked))
+        }
     }
 
-    private fun getDetails(id: Int, isMovie: Boolean) {
-        rxCompositeDisposable.add(
-            MovieRepository.getMovieDetails(id, isMovie)
-                .ioToMainTransform()
-                .subscribe(::handleDetailsResponse, ::handleError)
-        )
-    }
-
-    private fun getTvShowCredits(id: Int, isMovie: Boolean) {
-        rxCompositeDisposable.add(
-            MovieRepository.getMovieCredits(id, isMovie)
-                .ioToMainTransform()
-                .subscribe(::handleCreditsResponse, ::handleError)
-        )
-    }
-
-    private fun handleDetailsResponse(detailsResponse: DetailsResponse) {
-        if (detailsResponse.genres.isNotEmpty()) {
+    private fun showGenres(genres: List<Genre>) {
+        if (genres.isNotEmpty()) {
             binding.genresChipGroup.removeAllViews()
         }
-        detailsResponse.genres.forEach { genre ->
+        genres.forEach { genre ->
             val chip = Chip(requireActivity()).apply {
                 text = genre.name
                 isClickable = false
@@ -99,10 +106,8 @@ class MovieDetailsFragment : BaseFragmentOld<FragmentMovieDetailsBinding>() {
         }
     }
 
-    private fun handleCreditsResponse(creditsResponse: CreditsResponse) {
-        if (creditsResponse.cast.isNotEmpty()) {
-            binding.actorsTitle.isVisible = true
-        }
-        actorsAdapter.apply { addAll(ActorConverter().convert(creditsResponse)) }
+    private fun showActors(actors: List<ActorItem>) {
+        binding.actorsTitle.isVisible = true
+        actorsAdapter.apply { addAll(actors) }
     }
 }

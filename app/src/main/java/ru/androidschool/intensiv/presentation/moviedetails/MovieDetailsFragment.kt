@@ -15,6 +15,7 @@ import ru.androidschool.intensiv.databinding.FragmentMovieDetailsBinding
 import ru.androidschool.intensiv.models.data.response.CreditsResponse
 import ru.androidschool.intensiv.models.data.response.DetailsResponse
 import ru.androidschool.intensiv.models.domain.Movie
+import ru.androidschool.intensiv.models.presentation.moviedetail.MovieDetailsArgs
 import ru.androidschool.intensiv.presentation.BaseFragmentOld
 import ru.androidschool.intensiv.presentation.OffsetItemDecorator
 import ru.androidschool.intensiv.presentation.converters.ActorConverter
@@ -38,13 +39,13 @@ class MovieDetailsFragment : BaseFragmentOld<FragmentMovieDetailsBinding>() {
         }
 
         val movie = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            arguments?.getParcelable(FeedFragment.MOVIE_KEY, Movie::class.java)
+            arguments?.getParcelable(FeedFragment.MOVIE_KEY, MovieDetailsArgs::class.java)
         } else {
-            arguments?.getParcelable(FeedFragment.MOVIE_KEY) as? Movie
+            arguments?.getParcelable(FeedFragment.MOVIE_KEY) as? MovieDetailsArgs
         }
 
         movie?.let {
-            initBaseViews(it)
+            //initBaseViews(it)
             getDetails(it.id, it.isMovie)
             getTvShowCredits(it.id, it.isMovie)
         } ?: {

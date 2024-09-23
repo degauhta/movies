@@ -21,7 +21,7 @@ class MovieFinderApp : Application() {
     }
 
     companion object {
-        var instance: MovieFinderApp? = null
+        lateinit var instance: MovieFinderApp
             private set
     }
 }

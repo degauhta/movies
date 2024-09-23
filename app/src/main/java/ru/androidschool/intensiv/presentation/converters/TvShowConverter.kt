@@ -15,7 +15,10 @@ class TvShowConverter {
                 overview = it.overview,
                 rating = it.voteAverage.div(MovieConverter.HALF_IMDB_RATING),
                 imageUrl = it.posterPath.createImageUrl(),
-                isMovie = false
+                isMovie = false,
+                isFavorite = false,
+                actors = emptyList(),
+                genres = emptyList()
             )
             TvShowItem(movie = tvShow, onClick = onClick)
         }

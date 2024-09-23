@@ -10,13 +10,13 @@ import ru.androidschool.intensiv.models.data.response.MoviesResponse
 interface MovieApiInterface {
 
     @GET("movie/top_rated")
-    fun getTopRatedMovies(): Single<MoviesResponse>
+    suspend fun getTopRatedMovies(): MoviesResponse
 
     @GET("movie/popular")
-    fun getPopularMovies(): Single<MoviesResponse>
+    suspend fun getPopularMovies(): MoviesResponse
 
     @GET("movie/now_playing")
-    fun getNowPlayingMovies(): Single<MoviesResponse>
+    suspend fun getNowPlayingMovies(): MoviesResponse
 
     @GET("tv/top_rated")
     fun getTopRatedTvShow(): Single<MoviesResponse>

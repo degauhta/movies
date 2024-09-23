@@ -45,8 +45,8 @@ class TvShowsFragment : BaseFragmentOld<FragmentTvShowsBinding>() {
     }
 
     private fun openTvShowDetails(movie: Movie) {
-        val bundle = Bundle()
-        bundle.putParcelable(FeedFragment.MOVIE_KEY, movie)
-        findNavController().navigate(R.id.movie_details_fragment, bundle, options)
+//        val bundle = Bundle()
+//        bundle.putParcelable(FeedFragment.MOVIE_KEY, movie)
+//        findNavController().navigate(R.id.movie_details_fragment, bundle, options)
     }
 }

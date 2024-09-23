@@ -12,11 +12,11 @@ object MovieRepository {
     private const val MOVIE_PATH_KEY = "movie"
     private const val TV_PATH_KEY = "tv"
 
-    fun getTopRatedMovies(): Single<MoviesResponse> = api.apiClient.getTopRatedMovies()
+    fun getTopRatedMovies(): Single<MoviesResponse> = Single.error(Exception())
 
-    fun getPopularMovies(): Single<MoviesResponse> = api.apiClient.getPopularMovies()
+    fun getPopularMovies(): Single<MoviesResponse> = Single.error(Exception())
 
-    fun getNowPlayingMovies(): Single<MoviesResponse> = api.apiClient.getNowPlayingMovies()
+    fun getNowPlayingMovies(): Single<MoviesResponse> = Single.error(Exception())
 
     fun getTopRatedTvShow(): Single<MoviesResponse> = api.apiClient.getTopRatedTvShow()
 

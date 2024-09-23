@@ -13,6 +13,7 @@ import ru.androidschool.intensiv.models.presentation.moviedetail.MovieDetailsScr
 import ru.androidschool.intensiv.models.presentation.moviedetail.MovieDetailsScreenState
 import ru.androidschool.intensiv.presentation.BaseViewModel
 import ru.androidschool.intensiv.presentation.converters.ActorConverter
+import ru.androidschool.intensiv.presentation.converters.MovieConverter
 import timber.log.Timber
 
 class MovieDetailsViewModel(
@@ -42,7 +43,7 @@ class MovieDetailsViewModel(
                 interactor.getMovieFlow(args.id, args.isMovie).distinctUntilChanged().collect {
                     mutableState.value = MovieDetailsScreenState.Content(
                         MovieDetailsScreenModel(
-                            movie = it,
+                            movie = it.copy(rating = it.rating.div(MovieConverter.HALF_IMDB_RATING)),
                             genre = it.genres,
                             actors = actorConverter.convert(it.actors)
                         )

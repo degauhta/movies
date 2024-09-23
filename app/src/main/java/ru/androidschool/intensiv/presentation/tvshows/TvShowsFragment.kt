@@ -12,11 +12,11 @@ import ru.androidschool.intensiv.presentation.converters.TvShowConverter
 import ru.androidschool.intensiv.data.repository.MovieRepository
 import ru.androidschool.intensiv.models.domain.Movie
 import ru.androidschool.intensiv.databinding.FragmentTvShowsBinding
-import ru.androidschool.intensiv.presentation.BaseFragment
+import ru.androidschool.intensiv.presentation.BaseFragmentOld
 import ru.androidschool.intensiv.presentation.feed.FeedFragment
 import ru.androidschool.intensiv.utils.ioToMainTransform
 
-class TvShowsFragment : BaseFragment<FragmentTvShowsBinding>() {
+class TvShowsFragment : BaseFragmentOld<FragmentTvShowsBinding>() {
 
     private val adapter by lazy { GroupAdapter<GroupieViewHolder>() }
 

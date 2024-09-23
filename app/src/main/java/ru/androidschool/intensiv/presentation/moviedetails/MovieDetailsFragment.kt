@@ -15,14 +15,14 @@ import ru.androidschool.intensiv.databinding.FragmentMovieDetailsBinding
 import ru.androidschool.intensiv.models.data.response.CreditsResponse
 import ru.androidschool.intensiv.models.data.response.DetailsResponse
 import ru.androidschool.intensiv.models.domain.Movie
-import ru.androidschool.intensiv.presentation.BaseFragment
+import ru.androidschool.intensiv.presentation.BaseFragmentOld
 import ru.androidschool.intensiv.presentation.OffsetItemDecorator
 import ru.androidschool.intensiv.presentation.converters.ActorConverter
 import ru.androidschool.intensiv.presentation.feed.FeedFragment
 import ru.androidschool.intensiv.utils.ioToMainTransform
 import ru.androidschool.intensiv.utils.loadImage
 
-class MovieDetailsFragment : BaseFragment<FragmentMovieDetailsBinding>() {
+class MovieDetailsFragment : BaseFragmentOld<FragmentMovieDetailsBinding>() {
 
     private val actorsAdapter by lazy { GroupAdapter<GroupieViewHolder>() }
 
@@ -48,7 +48,7 @@ class MovieDetailsFragment : BaseFragment<FragmentMovieDetailsBinding>() {
             getDetails(it.id, it.isMovie)
             getTvShowCredits(it.id, it.isMovie)
         } ?: {
-            showToast(R.string.load_data_error)
+            showToast(R.string.load_data_error_title)
         }
     }
 

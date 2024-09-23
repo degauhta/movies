@@ -33,6 +33,10 @@
     <string name="movie_details_overview">Описание</string>
     <string name="movie_details_actors">Актеры</string>
 
-    <string name="load_data_error">Не удалось загрузить данные</string>
+    <string name="load_data_error_title">Данные не удалось загрузить</string>
+    <string name="load_data_error_subtitle">Проверьте соединение с интернетом и перезапустите приложение</string>
+    <string name="load_update_error">Данные устарели</string>
+
+    <string name="button_got_it">Хорошо</string>
 
 </resources>

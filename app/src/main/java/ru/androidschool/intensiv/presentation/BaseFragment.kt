@@ -95,7 +95,7 @@ abstract class BaseFragment<State, Effect, Action,
     private fun resolveVm() {
         val viewModelObject = createVm()
         viewModel = ViewModelProvider(
-            requireActivity(),
+            viewModelStore,
             object : ViewModelProvider.Factory {
                 override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
                     return viewModelObject as T

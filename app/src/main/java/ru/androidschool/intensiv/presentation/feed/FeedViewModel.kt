@@ -73,11 +73,10 @@ class FeedViewModel(
         Timber.e(e)
         val current = mutableState.value
         when {
-            current is FeedScreenState.Content && current.data.isNotEmpty() -> {
+            current is FeedScreenState.Content ->
                 viewModelScope.launch {
                     mutableEffect.send(FeedScreenEffect.ShowMessage(R.string.load_update_error))
                 }
-            }
 
             else -> mutableState.value = FeedScreenState.Error(
                 R.string.load_data_error_title,

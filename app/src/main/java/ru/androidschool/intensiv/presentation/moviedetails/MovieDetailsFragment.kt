@@ -47,7 +47,11 @@ class MovieDetailsFragment : BaseFragment<State, Effect, Action, ViewModel, Frag
         }
     }
 
-    override fun renderEffect(effect: Effect) = Unit // todo
+    override fun renderEffect(effect: Effect) {
+        when (effect) {
+            is Effect.ShowMessage -> showToast(effect.stringRes)
+        }
+    }
 
     @Suppress("DEPRECATION")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -19,7 +19,7 @@ interface MovieApiInterface {
     suspend fun getNowPlayingMovies(): MoviesResponse
 
     @GET("tv/top_rated")
-    fun getTopRatedTvShow(): Single<MoviesResponse>
+    suspend fun getTopRatedTvShow(): MoviesResponse
 
     @GET("{movie_type}/{id}")
     suspend fun getMovieDetails(

@@ -22,14 +22,14 @@ interface MovieApiInterface {
     fun getTopRatedTvShow(): Single<MoviesResponse>
 
     @GET("{movie_type}/{id}")
-    fun getMovieDetails(
+    suspend fun getMovieDetails(
         @Path("movie_type") movieType: String,
         @Path("id") id: Int
-    ): Single<DetailsResponse>
+    ): DetailsResponse
 
     @GET("{movie_type}/{id}/credits")
-    fun getMovieCredits(
+    suspend fun getMovieCredits(
         @Path("movie_type") movieType: String,
         @Path("id") id: Int
-    ): Single<CreditsResponse>
+    ): CreditsResponse
 }

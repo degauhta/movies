@@ -21,14 +21,8 @@ object MovieRepository {
     fun getTopRatedTvShow(): Single<MoviesResponse> = api.apiClient.getTopRatedTvShow()
 
     fun getMovieDetails(id: Int, isMovie: Boolean): Single<DetailsResponse> =
-        api.apiClient.getMovieDetails(
-            id = id,
-            movieType = if (isMovie) MOVIE_PATH_KEY else TV_PATH_KEY
-        )
+        Single.error(Exception())
 
     fun getMovieCredits(id: Int, isMovie: Boolean): Single<CreditsResponse> =
-        api.apiClient.getMovieCredits(
-            id = id,
-            movieType = if (isMovie) MOVIE_PATH_KEY else TV_PATH_KEY
-        )
+        Single.error(Exception())
 }

@@ -9,7 +9,6 @@ import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.ServiceLocator
 import ru.androidschool.intensiv.databinding.FeedHeaderBinding
 import ru.androidschool.intensiv.databinding.FragmentFeedBinding
-import ru.androidschool.intensiv.models.domain.Movie
 import ru.androidschool.intensiv.models.domain.MovieTypes
 import ru.androidschool.intensiv.models.presentation.moviedetail.MovieDetailsArgs
 import ru.androidschool.intensiv.presentation.BaseFragment

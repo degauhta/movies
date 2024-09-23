@@ -1,6 +1,5 @@
 package ru.androidschool.intensiv.data.remote
 
-import io.reactivex.rxjava3.core.Single
 import retrofit2.http.GET
 import retrofit2.http.Path
 import ru.androidschool.intensiv.models.data.response.CreditsResponse

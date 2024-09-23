@@ -14,18 +14,20 @@ class MovieEntityDbConverter {
         }.toMap()
     }
 
-    fun convertMovies(movies: List<MovieDbEntity>): List<Movie> {
-        return movies.map { convert(it) }
+    fun convertMovies(movies: List<MovieDbEntity>, isMovie: Boolean = true): List<Movie> {
+        return movies.map {
+            convert(it, isMovie)
+        }
     }
 
-    private fun convert(movie: MovieDbEntity) =
+    private fun convert(movie: MovieDbEntity, isMovie: Boolean = true) =
         Movie(
             id = movie.id,
             title = movie.title,
             overview = movie.overview,
             rating = movie.voteAverage,
             imageUrl = movie.posterPath.createImageUrl(),
-            isMovie = true,
+            isMovie = isMovie,
             isFavorite = false,
             genres = emptyList(),
             actors = emptyList()

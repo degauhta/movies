@@ -41,6 +41,8 @@ abstract class BaseFragment<State, Effect, Action,
         }
     }
 
+    protected var useViewModelStoreOwner: Boolean = false
+
     abstract fun createViewBinding(inflater: LayoutInflater, container: ViewGroup?): Binding
 
     abstract fun createVm(): ViewModel
@@ -94,14 +96,25 @@ abstract class BaseFragment<State, Effect, Action,
     @Suppress("UNCHECKED_CAST")
     private fun resolveVm() {
         val viewModelObject = createVm()
-        viewModel = ViewModelProvider(
-            viewModelStore,
-            object : ViewModelProvider.Factory {
-                override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
-                    return viewModelObject as T
+        viewModel = if (useViewModelStoreOwner) {
+            ViewModelProvider(
+                requireActivity(),
+                object : ViewModelProvider.Factory {
+                    override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
+                        return viewModelObject as T
+                    }
                 }
-            }
-        )[viewModelObject::class.java]
+            )
+        } else {
+            ViewModelProvider(
+                viewModelStore,
+                object : ViewModelProvider.Factory {
+                    override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
+                        return viewModelObject as T
+                    }
+                }
+            )
+        }[viewModelObject::class.java]
     }
 
     private fun subscribeViewModel() {

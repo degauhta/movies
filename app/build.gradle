@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-parcelize'
+apply plugin: 'kotlin-kapt'
 
 apply from: "../ktlint.gradle"
 
@@ -97,4 +98,10 @@ dependencies {
     implementation "io.reactivex.rxjava3:rxandroid:$rxAndroid"
     implementation "io.reactivex.rxjava3:rxjava:$rxJava"
     implementation "com.squareup.retrofit2:adapter-rxjava3:$rxRetrofitAdapter"
+
+    // room
+    implementation "androidx.room:room-runtime:$roomVersion"
+    annotationProcessor "androidx.room:room-compiler:$roomVersion"
+    kapt "androidx.room:room-compiler:$roomVersion"
+    implementation "androidx.room:room-ktx:$roomVersion"
 }

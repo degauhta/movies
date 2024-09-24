@@ -64,4 +64,6 @@ ext {
     rxRetrofitAdapter = '2.11.0'
 
     roomVersion = "2.6.1"
+
+    daggerVersion = "2.52"
 }

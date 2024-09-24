@@ -2,6 +2,8 @@ package ru.androidschool.intensiv.data.database
 
 object MovieDatabaseContract {
 
+    const val DB_NAME = "MovieDatabase"
+
     const val MOVIES_TABLE_NAME = "movies"
     const val MOVIES_COLUMN_ID = "id"
     const val MOVIES_COLUMN_FAVORITE = "is_favorite"

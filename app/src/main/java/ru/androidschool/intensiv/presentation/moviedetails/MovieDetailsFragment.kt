@@ -9,9 +9,10 @@ import androidx.core.view.isVisible
 import com.google.android.material.chip.Chip
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
+import ru.androidschool.intensiv.MovieFinderApp
 import ru.androidschool.intensiv.R
-import ru.androidschool.intensiv.ServiceLocator
 import ru.androidschool.intensiv.databinding.FragmentMovieDetailsBinding
+import ru.androidschool.intensiv.di.moviedetails.DaggerMovieDetailsInnerApi
 import ru.androidschool.intensiv.models.domain.Genre
 import ru.androidschool.intensiv.models.domain.Movie
 import ru.androidschool.intensiv.models.presentation.moviedetail.MovieDetailsArgs
@@ -19,7 +20,6 @@ import ru.androidschool.intensiv.models.presentation.moviedetail.MovieDetailsScr
 import ru.androidschool.intensiv.models.presentation.moviedetail.MovieDetailsScreenModel
 import ru.androidschool.intensiv.presentation.BaseFragment
 import ru.androidschool.intensiv.presentation.OffsetItemDecorator
-import ru.androidschool.intensiv.presentation.converters.ActorConverter
 import ru.androidschool.intensiv.presentation.feed.FeedFragment
 import ru.androidschool.intensiv.utils.loadImage
 import ru.androidschool.intensiv.models.presentation.moviedetail.MovieDetailsScreenAction as Action
@@ -35,10 +35,10 @@ class MovieDetailsFragment : BaseFragment<State, Effect, Action, ViewModel, Frag
         FragmentMovieDetailsBinding.inflate(inflater, container, false)
 
     override fun createVm(): ViewModel {
-        return ViewModel(
-            ServiceLocator.provideMovieInteractor(),
-            ActorConverter()
-        )
+        val component = DaggerMovieDetailsInnerApi.builder()
+            .coreComponent(MovieFinderApp.coreDaggerComponent)
+            .build()
+        return ViewModel(component.movieDetailsInteractor, component.actorConverter)
     }
 
     override fun renderState(state: State) {

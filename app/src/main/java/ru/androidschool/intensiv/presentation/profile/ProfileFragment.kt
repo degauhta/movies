@@ -10,9 +10,10 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.tabs.TabLayoutMediator
 import com.squareup.picasso.Picasso
 import jp.wasabeef.picasso.transformations.CropCircleTransformation
+import ru.androidschool.intensiv.MovieFinderApp
 import ru.androidschool.intensiv.R
-import ru.androidschool.intensiv.ServiceLocator
 import ru.androidschool.intensiv.databinding.FragmentProfileBinding
+import ru.androidschool.intensiv.di.profile.DaggerProfileInnerApi
 import ru.androidschool.intensiv.models.presentation.moviedetail.MovieDetailsArgs
 import ru.androidschool.intensiv.models.presentation.profile.ProfileScreenAction
 import ru.androidschool.intensiv.models.presentation.profile.ProfileScreenEffect
@@ -34,7 +35,11 @@ class ProfileFragment : BaseFragment<State, Effect, Action, ViewModel, FragmentP
     override fun createViewBinding(inflater: LayoutInflater, container: ViewGroup?) =
         FragmentProfileBinding.inflate(inflater, container, false)
 
-    override fun createVm() = ViewModel(ServiceLocator.provideProfileInteractor())
+    override fun createVm(): ViewModel {
+        val innerApi =
+            DaggerProfileInnerApi.builder().coreComponent(MovieFinderApp.coreDaggerComponent).build()
+        return ViewModel(innerApi.profileInteractor)
+    }
 
     override fun renderState(state: State) {
         when (state) {

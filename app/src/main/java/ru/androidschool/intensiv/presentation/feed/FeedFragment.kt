@@ -5,15 +5,15 @@ import android.view.*
 import androidx.navigation.fragment.findNavController
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
+import ru.androidschool.intensiv.MovieFinderApp
 import ru.androidschool.intensiv.R
-import ru.androidschool.intensiv.ServiceLocator
 import ru.androidschool.intensiv.databinding.FeedHeaderBinding
 import ru.androidschool.intensiv.databinding.FragmentFeedBinding
+import ru.androidschool.intensiv.di.feed.DaggerFeedInnerApi
 import ru.androidschool.intensiv.models.domain.MovieTypes
 import ru.androidschool.intensiv.models.presentation.moviedetail.MovieDetailsArgs
 import ru.androidschool.intensiv.presentation.BaseFragment
 import ru.androidschool.intensiv.presentation.OffsetItemDecorator
-import ru.androidschool.intensiv.presentation.converters.MovieConverter
 import ru.androidschool.intensiv.models.presentation.feed.FeedScreenAction as Action
 import ru.androidschool.intensiv.models.presentation.feed.FeedScreenEffect as Effect
 import ru.androidschool.intensiv.models.presentation.feed.FeedScreenState as State
@@ -31,8 +31,11 @@ class FeedFragment : BaseFragment<State, Effect, Action, ViewModel, FragmentFeed
     override fun createViewBinding(inflater: LayoutInflater, container: ViewGroup?) =
         FragmentFeedBinding.inflate(inflater, container, false)
 
-    override fun createVm() =
-        ViewModel(ServiceLocator.provideFeedInteractor(), MovieConverter())
+    override fun createVm(): ViewModel {
+        val innerApi =
+            DaggerFeedInnerApi.builder().coreComponent(MovieFinderApp.coreDaggerComponent).build()
+        return ViewModel(innerApi.feedInteractor, innerApi.movieConverter)
+    }
 
     override fun renderState(state: State) {
         when (state) {

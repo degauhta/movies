@@ -7,13 +7,13 @@ import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
+import ru.androidschool.intensiv.MovieFinderApp
 import ru.androidschool.intensiv.R
-import ru.androidschool.intensiv.ServiceLocator
 import ru.androidschool.intensiv.databinding.FragmentTvShowsBinding
+import ru.androidschool.intensiv.di.tvshow.DaggerTvShowInnerApi
 import ru.androidschool.intensiv.models.presentation.moviedetail.MovieDetailsArgs
 import ru.androidschool.intensiv.models.presentation.tvshows.TvShowScreenEffect
 import ru.androidschool.intensiv.presentation.BaseFragment
-import ru.androidschool.intensiv.presentation.converters.TvShowConverter
 import ru.androidschool.intensiv.presentation.feed.FeedFragment
 import ru.androidschool.intensiv.models.presentation.tvshows.TvShowScreenAction as Action
 import ru.androidschool.intensiv.models.presentation.tvshows.TvShowScreenEffect as Effect
@@ -28,7 +28,9 @@ class TvShowsFragment : BaseFragment<State, Effect, Action, ViewModel, FragmentT
         FragmentTvShowsBinding.inflate(inflater, container, false)
 
     override fun createVm(): ViewModel {
-        return ViewModel(ServiceLocator.provideTvShowInteractor(), TvShowConverter())
+        val innerApi =
+            DaggerTvShowInnerApi.builder().coreComponent(MovieFinderApp.coreDaggerComponent).build()
+        return ViewModel(innerApi.tvShowInteractor, innerApi.tvShowConverter)
     }
 
     override fun renderState(state: State) {

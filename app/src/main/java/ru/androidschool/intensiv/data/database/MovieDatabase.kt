@@ -1,8 +1,6 @@
 package ru.androidschool.intensiv.data.database
 
-import android.content.Context
 import androidx.room.Database
-import androidx.room.Room
 import androidx.room.RoomDatabase
 import ru.androidschool.intensiv.models.data.database.ActorDbEntity
 import ru.androidschool.intensiv.models.data.database.FavoriteDbEntity
@@ -46,18 +44,5 @@ abstract class MovieDatabase : RoomDatabase() {
 
     abstract val favoriteDao: FavoriteDao
 
-    companion object {
-
-        private const val DB_NAME = "MovieDatabase"
-
-        private var instance: MovieDatabase? = null
-
-        fun get(context: Context): MovieDatabase {
-            return Room.databaseBuilder(
-                context = context.applicationContext,
-                klass = MovieDatabase::class.java,
-                name = DB_NAME
-            ).build()
-        }
-    }
+    abstract val searchDao: SearchDao
 }

@@ -2,6 +2,7 @@ package ru.androidschool.intensiv.data.remote
 
 import retrofit2.http.GET
 import retrofit2.http.Path
+import retrofit2.http.Query
 import ru.androidschool.intensiv.models.data.response.CreditsResponse
 import ru.androidschool.intensiv.models.data.response.DetailsResponse
 import ru.androidschool.intensiv.models.data.response.MoviesResponse
@@ -19,6 +20,9 @@ interface MovieApiInterface {
 
     @GET("tv/top_rated")
     suspend fun getTopRatedTvShow(): MoviesResponse
+
+    @GET("search/movie")
+    suspend fun getMovieByQuery(@Query("query") query: String): MoviesResponse
 
     @GET("{movie_type}/{id}")
     suspend fun getMovieDetails(

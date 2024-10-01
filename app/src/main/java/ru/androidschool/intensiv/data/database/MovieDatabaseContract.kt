@@ -6,7 +6,7 @@ object MovieDatabaseContract {
 
     const val MOVIES_TABLE_NAME = "movies"
     const val MOVIES_COLUMN_ID = "id"
-    const val MOVIES_COLUMN_FAVORITE = "is_favorite"
+    const val MOVIES_COLUMN_TITLE = "title"
 
     const val FEED_TABLE_NAME = "feed"
     const val FEED_COLUMN_ID = "id"

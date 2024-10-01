@@ -8,7 +8,7 @@ import ru.androidschool.intensiv.data.database.MovieDatabaseContract
 @Entity(tableName = MovieDatabaseContract.MOVIES_TABLE_NAME)
 data class MovieDbEntity(
     @PrimaryKey @ColumnInfo(name = MovieDatabaseContract.MOVIES_COLUMN_ID) val id: Int,
-    val title: String,
+    @ColumnInfo(name = MovieDatabaseContract.MOVIES_COLUMN_TITLE) val title: String,
     val overview: String,
     val releaseDate: String,
     val voteAverage: Float,

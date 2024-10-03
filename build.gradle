@@ -62,4 +62,8 @@ ext {
     rxAndroid = '3.0.2'
     rxJava = '3.1.9'
     rxRetrofitAdapter = '2.11.0'
+
+    roomVersion = "2.6.1"
+
+    daggerVersion = "2.52"
 }

@@ -6,82 +6,86 @@ import android.text.style.RelativeSizeSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.fragment.app.Fragment
-import androidx.viewpager2.widget.ViewPager2
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.tabs.TabLayoutMediator
 import com.squareup.picasso.Picasso
 import jp.wasabeef.picasso.transformations.CropCircleTransformation
+import ru.androidschool.intensiv.MovieFinderApp
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.databinding.FragmentProfileBinding
+import ru.androidschool.intensiv.di.profile.DaggerProfileInnerApi
+import ru.androidschool.intensiv.models.presentation.moviedetail.MovieDetailsArgs
+import ru.androidschool.intensiv.models.presentation.profile.ProfileScreenAction
+import ru.androidschool.intensiv.models.presentation.profile.ProfileScreenEffect
+import ru.androidschool.intensiv.models.presentation.profile.ProfileScreenModel
+import ru.androidschool.intensiv.models.presentation.profile.ProfileScreenState
+import ru.androidschool.intensiv.presentation.BaseFragment
+import ru.androidschool.intensiv.presentation.feed.FeedFragment.Companion.MOVIE_KEY
+import ru.androidschool.intensiv.models.presentation.profile.ProfileScreenAction as Action
+import ru.androidschool.intensiv.models.presentation.profile.ProfileScreenEffect as Effect
+import ru.androidschool.intensiv.models.presentation.profile.ProfileScreenState as State
+import ru.androidschool.intensiv.presentation.profile.ProfileViewModel as ViewModel
 
-class ProfileFragment : Fragment() {
+class ProfileFragment : BaseFragment<State, Effect, Action, ViewModel, FragmentProfileBinding>() {
 
-    private lateinit var profileTabLayoutTitles: Array<String>
+    init {
+        useViewModelStoreOwner = true
+    }
 
-    private var _binding: FragmentProfileBinding? = null
+    override fun createViewBinding(inflater: LayoutInflater, container: ViewGroup?) =
+        FragmentProfileBinding.inflate(inflater, container, false)
 
-    // This property is only valid between onCreateView and
-    // onDestroyView.
-    private val binding get() = _binding!!
+    override fun createVm(): ViewModel {
+        val innerApi =
+            DaggerProfileInnerApi.builder().coreComponent(MovieFinderApp.coreDaggerComponent).build()
+        return ViewModel(innerApi.profileInteractor)
+    }
 
-    private var profilePageChangeCallback = object : ViewPager2.OnPageChangeCallback() {
-        override fun onPageSelected(position: Int) {
-            Toast.makeText(
-                requireContext(),
-                "Selected position: $position",
-                Toast.LENGTH_SHORT
-            ).show()
+    override fun renderState(state: State) {
+        when (state) {
+            is ProfileScreenState.Content -> renderUi(state.model)
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentProfileBinding.inflate(inflater, container, false)
-        return binding.root
+    private fun renderUi(model: ProfileScreenModel) {
+        TabLayoutMediator(binding.tabLayout, binding.profileViewPager) { tab, position ->
+            model.tabNames.getOrNull(position)?.let { pair ->
+                val title = "${pair.first}${pair.second}"
+                val number = pair.first
+                val spannableStringTitle = SpannableString(title).apply {
+                    setSpan(RelativeSizeSpan(2f), 0, number.toString().count(), 0)
+                }
+                tab.text = spannableStringTitle
+            }
+        }.attach()
+    }
+
+    override fun renderEffect(effect: Effect) {
+        when (effect) {
+            is ProfileScreenEffect.NavigateToMovieDetail -> openMovieDetails(effect.args)
+            is ProfileScreenEffect.ShowMessage -> showToast(effect.stringRes)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        viewModel.handleAction(ProfileScreenAction.Load)
         Picasso.get()
             .load(R.drawable.ic_avatar)
             .transform(CropCircleTransformation())
             .placeholder(R.drawable.ic_avatar)
             .into(binding.avatar)
-
-        profileTabLayoutTitles = resources.getStringArray(R.array.tab_titles)
-
-        val profileAdapter = ProfileAdapter(
-            this,
-            profileTabLayoutTitles.size
-        )
+        val profileAdapter = ProfileAdapter(this, TAB_COUNT)
         binding.profileViewPager.adapter = profileAdapter
-
-        binding.profileViewPager.registerOnPageChangeCallback(
-            profilePageChangeCallback
-        )
-
-        TabLayoutMediator(binding.tabLayout, binding.profileViewPager) { tab, position ->
-
-            // Выделение первой части заголовка таба
-            // Название таба
-            val title = profileTabLayoutTitles[position]
-            // Раздеряем название на части. Первый элемент будет кол-во
-            val parts = profileTabLayoutTitles[position].split(" ")
-            val number = parts[0]
-            val spannableStringTitle = SpannableString(title)
-            spannableStringTitle.setSpan(RelativeSizeSpan(2f), 0, number.count(), 0)
-
-            tab.text = spannableStringTitle
-        }.attach()
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    private fun openMovieDetails(args: MovieDetailsArgs) {
+        val bundle = Bundle()
+        bundle.putParcelable(MOVIE_KEY, args)
+        findNavController().navigate(R.id.movie_details_fragment, bundle, options)
+    }
+
+    companion object {
+        private const val TAB_COUNT = 2
     }
 }

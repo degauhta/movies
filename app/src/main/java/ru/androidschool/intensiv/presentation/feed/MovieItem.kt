@@ -1,13 +1,14 @@
 package ru.androidschool.intensiv.presentation.feed
 
 import android.view.View
+import com.xwray.groupie.Item
 import com.xwray.groupie.viewbinding.BindableItem
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.models.domain.Movie
 import ru.androidschool.intensiv.databinding.ItemMovieBinding
 import ru.androidschool.intensiv.utils.loadImage
 
-class MovieItem(
+data class MovieItem(
     private val movie: Movie,
     private val onClick: (movie: Movie) -> Unit
 ) : BindableItem<ItemMovieBinding>() {
@@ -27,4 +28,10 @@ class MovieItem(
     }
 
     override fun initializeViewBinding(v: View) = ItemMovieBinding.bind(v)
+
+    override fun getId(): Long =
+        movie.id.toLong()
+
+    override fun hasSameContentAs(other: Item<*>): Boolean =
+        (movie == (other as MovieItem).movie)
 }

@@ -2,6 +2,7 @@ package ru.androidschool.intensiv.presentation.tvshows
 
 import android.view.View
 import com.squareup.picasso.Picasso
+import com.xwray.groupie.Item
 import com.xwray.groupie.viewbinding.BindableItem
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.models.domain.Movie
@@ -28,4 +29,10 @@ class TvShowItem(
             .placeholder(R.drawable.item_placeholder)
             .into(viewBinding.imagePreview)
     }
+
+    override fun getId(): Long =
+        movie.id.toLong()
+
+    override fun hasSameContentAs(other: Item<*>): Boolean =
+        (movie == (other as TvShowItem).movie)
 }

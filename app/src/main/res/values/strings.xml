@@ -14,17 +14,13 @@
     <string name="tv_shows">Сериалы</string>
     <string name="profile">Профиль</string>
     <string name="search">Поиск</string>
-    <string name="later">44\n Буду смотреть</string>
 
     <string name="tv_show">Телесериалы</string>
     <string name="close">закрыть</string>
 
-    <string-array name="tab_titles">
-        <item>23\n Понравилось</item>
-        <item>@string/later</item>
-    </string-array>
+    <string name="profile_tab_later">\nБуду смотреть</string>
+    <string name="profile_tab_favorite">\nПонравилось</string>
 
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="placeholder">Пёс Киноман</string>
 
     <string name="movie_top_title">Лучшие</string>
@@ -33,6 +29,17 @@
     <string name="movie_details_overview">Описание</string>
     <string name="movie_details_actors">Актеры</string>
 
-    <string name="load_data_error">Не удалось загрузить данные</string>
+    <string name="load_data_error_title">Данные не удалось загрузить</string>
+    <string name="load_data_error_subtitle">Проверьте соединение с интернетом и перезапустите приложение</string>
+    <string name="load_update_error">Не удалось обновить данные</string>
+
+    <string name="button_got_it">Хорошо</string>
+
+    <string name="default_error">Произошла ошибка!</string>
+
+    <string name="search_empty">Не удалось найти подходящего фильма</string>
+
+    <string name="search_result_empty_title">К сожалению, мы ничего \nне нашли</string>
+    <string name="search_result_empty_subtitle">Проверьте, может быть вы опечатались</string>
 
 </resources>

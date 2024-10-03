@@ -7,46 +7,64 @@ import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
+import ru.androidschool.intensiv.MovieFinderApp
 import ru.androidschool.intensiv.R
-import ru.androidschool.intensiv.presentation.converters.TvShowConverter
-import ru.androidschool.intensiv.data.repository.MovieRepository
-import ru.androidschool.intensiv.models.domain.Movie
 import ru.androidschool.intensiv.databinding.FragmentTvShowsBinding
+import ru.androidschool.intensiv.di.tvshow.DaggerTvShowInnerApi
+import ru.androidschool.intensiv.models.presentation.moviedetail.MovieDetailsArgs
+import ru.androidschool.intensiv.models.presentation.tvshows.TvShowScreenEffect
 import ru.androidschool.intensiv.presentation.BaseFragment
 import ru.androidschool.intensiv.presentation.feed.FeedFragment
-import ru.androidschool.intensiv.utils.ioToMainTransform
+import ru.androidschool.intensiv.models.presentation.tvshows.TvShowScreenAction as Action
+import ru.androidschool.intensiv.models.presentation.tvshows.TvShowScreenEffect as Effect
+import ru.androidschool.intensiv.models.presentation.tvshows.TvShowScreenState as State
+import ru.androidschool.intensiv.presentation.tvshows.TvShowViewModel as ViewModel
 
-class TvShowsFragment : BaseFragment<FragmentTvShowsBinding>() {
+class TvShowsFragment : BaseFragment<State, Effect, Action, ViewModel, FragmentTvShowsBinding>() {
 
     private val adapter by lazy { GroupAdapter<GroupieViewHolder>() }
 
     override fun createViewBinding(inflater: LayoutInflater, container: ViewGroup?) =
         FragmentTvShowsBinding.inflate(inflater, container, false)
 
+    override fun createVm(): ViewModel {
+        val innerApi =
+            DaggerTvShowInnerApi.builder().coreComponent(MovieFinderApp.coreDaggerComponent).build()
+        return ViewModel(innerApi.tvShowInteractor, innerApi.tvShowConverter)
+    }
+
+    override fun renderState(state: State) {
+        when (state) {
+            State.Loading -> binding.serialsProgressbar.show()
+            is State.Error -> {
+                binding.serialsProgressbar.hide()
+                showMessage(state.title, state.message)
+            }
+            is State.Content -> renderUi(state.data)
+        }
+    }
+
+    override fun renderEffect(effect: Effect) {
+        when (effect) {
+            is Effect.NavigateTvShowDetail -> navigateTvShowDetails(effect.args)
+            is TvShowScreenEffect.ShowMessage -> showToast(effect.stringRes)
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.serialsRecyclerView.adapter = adapter
-        getSerials()
+        viewModel.handleAction(Action.Load)
     }
 
-    private fun getSerials() {
-        rxCompositeDisposable.add(MovieRepository.getTopRatedTvShow()
-            .map { TvShowConverter().convert(it) { movie -> openTvShowDetails(movie) } }
-            .ioToMainTransform()
-            .doOnSubscribe { binding.serialsProgressbar.show() }
-            .doFinally { binding.serialsProgressbar.hide() }
-            .subscribe(::handleSuccess, ::handleError)
-        )
-    }
-
-    private fun handleSuccess(movies: List<TvShowItem>) {
+    private fun renderUi(movies: List<TvShowItem>) {
         binding.serialsProgressbar.hide()
         adapter.apply { addAll(movies) }
     }
 
-    private fun openTvShowDetails(movie: Movie) {
+    private fun navigateTvShowDetails(args: MovieDetailsArgs) {
         val bundle = Bundle()
-        bundle.putParcelable(FeedFragment.MOVIE_KEY, movie)
+        bundle.putParcelable(FeedFragment.MOVIE_KEY, args)
         findNavController().navigate(R.id.movie_details_fragment, bundle, options)
     }
 }
